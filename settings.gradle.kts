@@ -22,6 +22,8 @@ dependencyResolutionManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "Runly"
 include(":app")
 include(":auth:data")
