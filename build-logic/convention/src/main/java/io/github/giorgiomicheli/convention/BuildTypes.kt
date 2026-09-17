@@ -1,0 +1,72 @@
+package io.github.giorgiomicheli.convention
+
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.BuildType
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.invoke
+
+internal fun Project.configureBuildTypes(
+    commonExtension: CommonExtension,
+    extensionType: ExtensionType
+) {
+    commonExtension.run {
+
+        buildFeatures.buildConfig = true
+
+        val apiKey = gradleLocalProperties(rootDir, providers).getProperty("API_KEY")
+
+        when(extensionType) {
+            ExtensionType.APPLICATION -> {
+                // THERE WAS A RECEIVER SHADOWING PROBLEM HERE, the fix was adding
+                // this@configureBuildTypes to specify the correct receiver
+                this@configureBuildTypes.extensions.configure<ApplicationExtension>() {
+                    buildTypes {
+                        debug {
+                            configureDebugBuildType(apiKey)
+                        }
+                        release {
+                            configureReleaseBuildType(commonExtension, apiKey)
+                        }
+                    }
+                }
+            }
+
+            ExtensionType.LIBRARY -> {
+                this@configureBuildTypes.extensions.configure<LibraryExtension>() {
+                    buildTypes {
+                        debug {
+                            configureDebugBuildType(apiKey)
+                        }
+                        release {
+                            configureReleaseBuildType(commonExtension, apiKey)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun BuildType.configureDebugBuildType(apiKey: String) {
+    buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    buildConfigField("String", "BASE_URL", "\"https://runique.pl-coding.com:8080\"")
+}
+
+private fun BuildType.configureReleaseBuildType(
+    commonExtension: CommonExtension,
+    apiKey: String
+) {
+    buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    buildConfigField("String", "BASE_URL", "\"https://runique.pl-coding.com:8080\"")
+
+    // Enable R8, shrink the apk by removing unnecessary resources and obfuscate the code
+    isMinifyEnabled = true
+    proguardFiles(
+        commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
+        "proguard-rules.pro"
+    )
+}
