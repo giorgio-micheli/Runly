@@ -1,7 +1,7 @@
 # I removed the playcore
 [versions]
 agp = "9.2.1"
-androidTools = "31.2.2"
+androidTools = "32.4.0"
 
 # Google Play core libraries
 assetDelivery = "2.3.0"
@@ -55,6 +55,7 @@ projectVersionCode = "1"
 
 
 [libraries]
+
 # Androidx
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
@@ -128,6 +129,13 @@ google-maps-android-utils-ktx = { module = "com.google.maps.android:maps-utils-k
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 org-mongodb-bson = { module = "org.mongodb:bson", version.ref = "bson" }
+
+# Gradle
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
