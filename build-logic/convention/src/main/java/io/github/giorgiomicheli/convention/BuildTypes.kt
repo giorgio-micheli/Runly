@@ -21,7 +21,9 @@ internal fun Project.configureBuildTypes(
 
         when(extensionType) {
             ExtensionType.APPLICATION -> {
-                extensions.configure<ApplicationExtension>() {
+                // THERE WAS A RECEIVER SHADOWING PROBLEM HERE, the fix was adding
+                // this@configureBuildTypes to specify the correct receiver
+                this@configureBuildTypes.extensions.configure<ApplicationExtension>() {
                     buildTypes {
                         debug {
                             configureDebugBuildType(apiKey)
@@ -34,7 +36,7 @@ internal fun Project.configureBuildTypes(
             }
 
             ExtensionType.LIBRARY -> {
-                extensions.configure<LibraryExtension>() {
+                this@configureBuildTypes.extensions.configure<LibraryExtension>() {
                     buildTypes {
                         debug {
                             configureDebugBuildType(apiKey)
