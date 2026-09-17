@@ -1,24 +1,13 @@
-plugins {
-    alias(libs.plugins.android.application)
+ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.mapsplatform.secrets.plugin)
+    alias(libs.plugins.runly.android.application)
 }
 
 android {
     namespace = "io.github.giorgiomicheli.runly"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
 
     defaultConfig {
-        applicationId = "io.github.giorgiomicheli.runly"
-        minSdk = 29
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,10 +17,6 @@ android {
                 enable = false
             }
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
         compose = true
