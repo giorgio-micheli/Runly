@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.giorgiomicheli.presentation.ui"
+    namespace = "io.github.giorgiomicheli.core.presentation.ui"
 }
 
 dependencies {
