@@ -6,7 +6,9 @@ import io.github.giorgiomicheli.convention.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-
+/*
+    Plugin that can be applied only to the android application module (:app)
+ */
 class AndroidApplicationConventionPlugin: Plugin<Project> {
 
     override fun apply(target: Project) {
