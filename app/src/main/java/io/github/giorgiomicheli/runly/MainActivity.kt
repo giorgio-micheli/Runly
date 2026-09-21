@@ -10,7 +10,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.tooling.preview.Preview
+import io.github.giorgiomicheli.auth.presentation.register.RegisterScreen
+import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
+import io.github.giorgiomicheli.auth.presentation.register.RegisterState
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +23,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RunlyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                RegisterScreen(
+                    state = RegisterState(),
+                    onAction = {}
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RunlyTheme {
-        Greeting("Android")
     }
 }
