@@ -3,6 +3,9 @@ package io.github.giorgiomicheli.auth.presentation.register
 import androidx.compose.foundation.text.input.TextFieldState
 import io.github.giorgiomicheli.auth.domain.PasswordValidationState
 
+/*
+    State of the register screen
+ */
 data class RegisterState(
     val email: TextFieldState = TextFieldState(),
     val isEmailValid: Boolean = false,

@@ -8,6 +8,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+/*
+    Custom app typography using the custom font in the res/font folder
+ */
 val Poppins = FontFamily(
     Font(
         resId = R.font.poppins_light,

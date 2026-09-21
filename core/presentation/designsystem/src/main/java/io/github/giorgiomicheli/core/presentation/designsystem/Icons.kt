@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 
+/*
+    Utility global properties used to represent an icon in the res/drawable folder
+ */
 val AnalyticsIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.analytics)
