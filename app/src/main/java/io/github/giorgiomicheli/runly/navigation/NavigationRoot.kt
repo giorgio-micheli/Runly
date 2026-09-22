@@ -1,5 +1,6 @@
 package io.github.giorgiomicheli.runly.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
@@ -31,13 +32,15 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                     onSignInClick = {
                         backStack.add(AppRoute.Login)
                     },
-                    onSuccessFulRegistration = {
+                    onSuccessfulRegistration = {
                         backStack.add(AppRoute.Login)
                     }
                 )
             }
             entry<AppRoute.Login> {
-                //TODO: add the right composable
+                Text(
+                    text = "Login screen, still work in progress"
+                )
             }
         }
     )
