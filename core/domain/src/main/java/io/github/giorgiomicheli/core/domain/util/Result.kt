@@ -12,12 +12,12 @@ inline fun <T, E: Failure, R> Result<T, E>.map(map: (T) -> R): Result<R, E> {
     }
 }
 
-typealias EmptyDataResult<E> = Result<Unit, E>
+typealias EmptyResult<E> = Result<Unit, E>
 
 /**
  * Maps whatever the type T is, to Unit, so it returns a Result<Unit, E> which is then type aliased
  * to EmptyDataResult<E>
  */
-fun <T, E: Failure> Result<T, E>.asEmptyDataResult(): EmptyDataResult<E> {
+fun <T, E: Failure> Result<T, E>.asEmptyDataResult(): EmptyResult<E> {
     return map { }
 }
