@@ -10,12 +10,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.tooling.preview.Preview
-import io.github.giorgiomicheli.auth.presentation.register.RegisterScreen
-import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
-import io.github.giorgiomicheli.auth.presentation.register.RegisterState
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
+import io.github.giorgiomicheli.runly.navigation.NavigationRoot
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +20,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RunlyTheme {
-                RegisterScreen(
-                    state = RegisterState(),
-                    onAction = {}
-                )
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    NavigationRoot(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
     }
