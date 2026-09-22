@@ -1,5 +1,7 @@
 package io.github.giorgiomicheli.core.presentation.designsystem.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +63,28 @@ fun RunlyPasswordTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isFocused) {
+            MaterialTheme.colorScheme.primary.copy(
+                alpha = 0.05f
+            )
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = tween(durationMillis = 200),
+        label = "backgroundColor"
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isFocused) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            Color.Transparent
+        },
+        animationSpec = tween(durationMillis = 200),
+        label = "borderColor"
+    )
+
     Column(
         modifier = modifier
     ) {
@@ -87,22 +111,10 @@ fun RunlyPasswordTextField(
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(
-                    if (isFocused) {
-                        MaterialTheme.colorScheme.primary.copy(
-                            alpha = 0.05f
-                        )
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    }
-                )
+                .background(backgroundColor)
                 .border(
                     width = 1.dp,
-                    color = if (isFocused) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color.Transparent
-                    },
+                    color = borderColor,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 12.dp)
