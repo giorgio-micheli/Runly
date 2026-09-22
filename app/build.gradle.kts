@@ -25,14 +25,16 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Coil
-    implementation(libs.coil.compose)
-
     // Compose
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.navigation.compose)
+
+    // Navigation 3
+    implementation(libs.bundles.navigation3)
+
+    // Coil
+    implementation(libs.coil.compose)
 
     // Core
     implementation(libs.androidx.core.ktx)
