@@ -33,6 +33,9 @@ dependencies {
     // Navigation 3
     implementation(libs.bundles.navigation3)
 
+    // Koin
+    implementation(libs.bundles.koin)
+
     // Coil
     implementation(libs.coil.compose)
 
