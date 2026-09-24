@@ -6,8 +6,10 @@ import androidx.security.crypto.MasterKey
 import io.github.giorgiomicheli.auth.data.EmailPatternValidator
 import io.github.giorgiomicheli.auth.domain.PatternValidator
 import io.github.giorgiomicheli.auth.domain.UserDataValidator
+import io.github.giorgiomicheli.runly.MainViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
@@ -20,4 +22,5 @@ val appModule = module {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
+    viewModelOf(::MainViewModel)
 }
