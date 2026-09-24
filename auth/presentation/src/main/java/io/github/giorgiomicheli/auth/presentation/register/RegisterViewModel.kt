@@ -75,7 +75,13 @@ class RegisterViewModel(
                 )
             }
             is RegisterAction.OnRegisterClick -> register()
-            else -> Unit
+            is RegisterAction.OnLoginClick -> loginButtonClicked()
+        }
+    }
+
+    private fun loginButtonClicked() {
+        viewModelScope.launch {
+            eventChannel.send(RegisterEvent.LoginButtonClicked)
         }
     }
 
@@ -104,5 +110,4 @@ class RegisterViewModel(
             }
         }
     }
-
 }
