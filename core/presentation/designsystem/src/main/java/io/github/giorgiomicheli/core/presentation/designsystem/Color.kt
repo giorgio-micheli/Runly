@@ -2,6 +2,9 @@ package io.github.giorgiomicheli.core.presentation.designsystem
 
 import androidx.compose.ui.graphics.Color
 
+/*
+    Custom app colors
+ */
 val RunlyGreen = Color(0xFF00F15E)
 val RunlyGreen30 = Color(0x4D00F15E)
 val RunlyGreen10 = Color(0x1A00F15E)

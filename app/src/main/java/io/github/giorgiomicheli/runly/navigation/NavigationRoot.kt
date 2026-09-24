@@ -1,27 +1,103 @@
 package io.github.giorgiomicheli.runly.navigation
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import io.github.giorgiomicheli.auth.presentation.intro.IntroScreenRoot
+import io.github.giorgiomicheli.auth.presentation.login.LoginScreenRoot
+import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
+
+val durata = 400
 
 @Composable
-fun NavigationRoot(modifier: Modifier = Modifier) {
-    val backStack = rememberNavBackStack(AppRoute.Intro)
+fun NavigationRoot(
+    modifier: Modifier = Modifier,
+    isLoggedIn: Boolean
+) {
+    val backStack = rememberNavBackStack(if (isLoggedIn) AppRoute.Run else AppRoute.Intro)
 
     NavDisplay(
         backStack = backStack,
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         onBack = { backStack.removeLastOrNull() },
+        transitionSpec = {
+            fadeIn(tween(durata)) togetherWith fadeOut(tween(durata))
+        },
+        popTransitionSpec = {
+            fadeIn(tween(durata)) togetherWith fadeOut(tween(durata))
+        },
+        predictivePopTransitionSpec = {
+            fadeIn(tween(durata)) togetherWith fadeOut(tween(durata))
+        },
         entryProvider = entryProvider {
             entry<AppRoute.Intro> {
-                //TODO: add the right composable
-            }
-            entry<AppRoute.Login> {
-                //TODO: add the right composable
+                IntroScreenRoot(
+                    onSignUpClick = {
+                        backStack.add(AppRoute.Register)
+                        backStack.printCurrentBackstack()
+                    },
+                    onSignInClick = {
+                        backStack.add(AppRoute.Login)
+                        backStack.printCurrentBackstack()
+                    }
+                )
             }
             entry<AppRoute.Register> {
-                //TODO: add the right composable
+                RegisterScreenRoot(
+                    onSignInClick = {
+                        backStack.removeLastOrNull()
+                        backStack.add(AppRoute.Login)
+                        backStack.printCurrentBackstack()
+                    },
+                    onSuccessfulRegistration = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Login)
+                    },
+                )
+            }
+            entry<AppRoute.Login> {
+                LoginScreenRoot(
+                    onSignUpClick = {
+                        backStack.removeLastOrNull()
+                        backStack.add(AppRoute.Register)
+                        backStack.printCurrentBackstack()
+                    },
+                    onLoginSuccessful = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Run)
+                    },
+                )
+            }
+            entry<AppRoute.Run> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Run screen"
+                    )
+                }
             }
         }
     )

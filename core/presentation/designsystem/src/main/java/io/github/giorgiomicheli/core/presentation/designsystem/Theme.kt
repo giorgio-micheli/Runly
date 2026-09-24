@@ -5,6 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
+/*
+    We will use only the dark theme in this app
+ */
 val DarkColorScheme = darkColorScheme(
     primary = RunlyGreen,
     background = RunlyBlack,
@@ -15,7 +18,8 @@ val DarkColorScheme = darkColorScheme(
     onPrimary = RunlyBlack,
     onBackground = RunlyWhite,
     onSurface = RunlyWhite,
-    onSurfaceVariant = RunlyGray
+    onSurfaceVariant = RunlyGray,
+    error = RunlyDarkRed
 )
 
 @Composable

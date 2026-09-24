@@ -16,6 +16,10 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
+/*
+    Ktor utility functions
+ */
+
 suspend inline fun <reified Response: Any> HttpClient.get(
     route: String,
     queryParameters: Map<String, Any?> = mapOf(),
