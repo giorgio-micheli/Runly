@@ -22,13 +22,22 @@ import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyF
 import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyScaffold
 import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyToolbar
 import io.github.giorgiomicheli.core.presentation.designsystem.components.util.DropDownItem
+import io.github.giorgiomicheli.core.presentation.ui.ObserveAsEvents
 import io.github.giorgiomicheli.core.presentation.ui.R
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RunOverviewScreenRoot(
-    viewModel: RunOverviewViewModel = koinViewModel()
+    viewModel: RunOverviewViewModel = koinViewModel(),
+    onActiveRunButtonClicked: () -> Unit
 ) {
+
+    ObserveAsEvents(viewModel.events) {event ->
+        when(event) {
+            is RunOverviewEvent.ActiveRunButtonClicked -> onActiveRunButtonClicked()
+        }
+    }
+
     RunOverviewScreen(
         onAction = viewModel::onAction
     )

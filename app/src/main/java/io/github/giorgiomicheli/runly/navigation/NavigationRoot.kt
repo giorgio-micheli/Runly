@@ -24,6 +24,7 @@ import androidx.navigation3.ui.NavDisplay
 import io.github.giorgiomicheli.auth.presentation.intro.IntroScreenRoot
 import io.github.giorgiomicheli.auth.presentation.login.LoginScreenRoot
 import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
+import io.github.giorgiomicheli.run.presentation.active_run.ActiveRunScreenRoot
 import io.github.giorgiomicheli.run.presentation.run_overview.RunOverviewScreenRoot
 
 val durata = 400
@@ -33,7 +34,7 @@ fun NavigationRoot(
     modifier: Modifier = Modifier,
     isLoggedIn: Boolean
 ) {
-    val backStack = rememberNavBackStack(if (isLoggedIn) AppRoute.Run else AppRoute.Intro)
+    val backStack = rememberNavBackStack(if (isLoggedIn) AppRoute.RunOverview else AppRoute.Intro)
 
     NavDisplay(
         backStack = backStack,
@@ -86,17 +87,23 @@ fun NavigationRoot(
                     },
                     onLoginSuccessful = {
                         backStack.clear()
-                        backStack.add(AppRoute.Run)
+                        backStack.add(AppRoute.RunOverview)
                     },
                 )
             }
-            entry<AppRoute.Run> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    RunOverviewScreenRoot()
-                }
+            entry<AppRoute.RunOverview> {
+                RunOverviewScreenRoot(
+                    onActiveRunButtonClicked = {
+                        backStack.add(AppRoute.ActiveRun)
+                    }
+                )
+            }
+            entry<AppRoute.ActiveRun> {
+                ActiveRunScreenRoot(
+                    onBackClick = {
+                        backStack.removeLastOrNull()
+                    }
+                )
             }
         }
     )
