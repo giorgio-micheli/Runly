@@ -24,6 +24,7 @@ import androidx.navigation3.ui.NavDisplay
 import io.github.giorgiomicheli.auth.presentation.intro.IntroScreenRoot
 import io.github.giorgiomicheli.auth.presentation.login.LoginScreenRoot
 import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
+import io.github.giorgiomicheli.run.presentation.run_overview.RunOverviewScreenRoot
 
 val durata = 400
 
@@ -94,9 +95,7 @@ fun NavigationRoot(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Run screen"
-                    )
+                    RunOverviewScreenRoot()
                 }
             }
         }
