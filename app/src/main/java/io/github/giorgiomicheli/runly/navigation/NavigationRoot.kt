@@ -44,24 +44,27 @@ fun NavigationRoot(
         ),
         onBack = { backStack.removeLastOrNull() },
         transitionSpec = {
-            fadeIn(tween(durata)) togetherWith fadeOut(tween(durata))
+            fadeIn(tween(durata)) togetherWith
+                    fadeOut(tween(durata))
         },
         popTransitionSpec = {
-            fadeIn(tween(durata)) togetherWith fadeOut(tween(durata))
+            fadeIn(tween(durata)) togetherWith
+                    fadeOut(tween(durata))
         },
         predictivePopTransitionSpec = {
-            fadeIn(tween(durata)) togetherWith fadeOut(tween(durata))
+            fadeIn(tween(durata)) togetherWith
+                    fadeOut(tween(durata))
         },
         entryProvider = entryProvider {
             entry<AppRoute.Intro> {
                 IntroScreenRoot(
                     onSignUpClick = {
                         backStack.add(AppRoute.Register)
-                        backStack.printCurrentBackstack()
+                        //backStack.printCurrentBackstack()
                     },
                     onSignInClick = {
                         backStack.add(AppRoute.Login)
-                        backStack.printCurrentBackstack()
+                        //backStack.printCurrentBackstack()
                     }
                 )
             }
@@ -70,7 +73,7 @@ fun NavigationRoot(
                     onSignInClick = {
                         backStack.removeLastOrNull()
                         backStack.add(AppRoute.Login)
-                        backStack.printCurrentBackstack()
+                        //backStack.printCurrentBackstack()
                     },
                     onSuccessfulRegistration = {
                         backStack.clear()
@@ -83,7 +86,7 @@ fun NavigationRoot(
                     onSignUpClick = {
                         backStack.removeLastOrNull()
                         backStack.add(AppRoute.Register)
-                        backStack.printCurrentBackstack()
+                        //backStack.printCurrentBackstack()
                     },
                     onLoginSuccessful = {
                         backStack.clear()
