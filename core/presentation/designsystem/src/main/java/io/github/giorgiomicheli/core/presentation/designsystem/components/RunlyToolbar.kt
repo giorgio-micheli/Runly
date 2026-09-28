@@ -106,7 +106,7 @@ fun RunlyToolbar(
                                         onMenuItemClick(index)
                                     }
                                     .fillMaxWidth()
-                                    .padding(16.dp),
+                                    .padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
