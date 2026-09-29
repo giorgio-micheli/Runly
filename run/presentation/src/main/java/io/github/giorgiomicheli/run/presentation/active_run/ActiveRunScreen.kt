@@ -80,10 +80,10 @@ private fun ActiveRunScreen(
     var showSettingsDialog by remember { mutableStateOf(false) }
 
     /**
-     * Legge lo stato reale dei permessi e lo comunica al ViewModel.
-     * Usata sia dal launcher sia dal LaunchedEffect, così la regola è identica ovunque.
+     * Reads the real state of the permissions and send them to the viewModel
+     * Used both by the launcher and the LaunchedEffect, this way the rule is the same everywhere.
      *
-     * @return true se la location è negata in modo permanente
+     * @return true if the location permission has been declined permanently
      */
     fun submitPermissionInfo(): Boolean {
         // Checks both if the location and notification permissions are currently granted
@@ -115,28 +115,25 @@ private fun ActiveRunScreen(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { _ ->
-        // Se abbiamo appena chiesto il permesso e non c'è né il permesso né il rationale,
-        // significa che il rifiuto è permanente (o il popup non è nemmeno comparso).
-        // Nota: leggiamo lo stato reale con le utility invece della mappa `perms`,
-        // perché la mappa contiene solo i permessi che abbiamo effettivamente richiesto.
+        /*
+        If we just asked for the permission e the permission and the rationale are not present,
+        this means that the user decided to permanently decline the permission.
+        We read the real state usign this utility function instead of the map "perms" cause the map
+        only contains the permissions that we actually required.
+         */
         showSettingsDialog = submitPermissionInfo()
     }
 
     LaunchedEffect(key1 = Unit) {
-        val locationPermanentlyDenied = submitPermissionInfo()
+        //val locationPermanentlyDenied = submitPermissionInfo()
 
         val showLocationRationale = activity.shouldShowLocationPermissionRationale()
 
-        // Se il rationale è visibile aspettiamo il click su "Okay",
-        // altrimenti richiediamo subito i permessi mancanti
+        // If the rationale message is visible we wait for the user click on "Okay" to show again
+        // the android permission dialog. Otherwise, we directly request again the permissions
         if (!showLocationRationale) {
             permissionLauncher.requestRunlyPermissions(context)
         }
-
-        // Caso limite: se la location è già negata in modo permanente il launcher
-        // risponde subito e la callback mostrerà il dialog; non serve fare altro qui.
-        @Suppress("UNUSED_VARIABLE")
-        val ignored = locationPermanentlyDenied
     }
 
     // When the user comes back from the app's settings we update the state
@@ -213,7 +210,8 @@ private fun ActiveRunScreen(
         )
     }
 
-    // Dialog per rifiuto permanente: porta alle impostazioni dell'app
+    // Dialog for informing the user that he declined permanently the location permission,
+    // By clicking on "Open settings" the user will be taken to the app's settings
     if (showSettingsDialog && !state.showLocationRationale) {
         RunlyDialog(
             title = stringResource(R.string.permission_required),
