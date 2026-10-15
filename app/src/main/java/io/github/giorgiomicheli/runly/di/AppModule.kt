@@ -7,6 +7,8 @@ import io.github.giorgiomicheli.auth.data.EmailPatternValidator
 import io.github.giorgiomicheli.auth.domain.PatternValidator
 import io.github.giorgiomicheli.auth.domain.UserDataValidator
 import io.github.giorgiomicheli.runly.MainViewModel
+import io.github.giorgiomicheli.runly.RunlyApp
+import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -21,6 +23,9 @@ val appModule = module {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+    }
+    single<CoroutineScope> {
+        (androidApplication() as RunlyApp).applicationScope
     }
     viewModelOf(::MainViewModel)
 }
