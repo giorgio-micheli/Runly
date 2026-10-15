@@ -69,6 +69,20 @@ class RunningTracker(
         // We only want to track the user's time only if isTracking is true and whenever it changes
         // we also want to stop if it's false
         isTracking
+            .onEach { isTracking ->
+                if (!isTracking) {
+                    val newList = buildList {
+                        addAll(runData.value.locations)
+                        add(emptyList<LocationTimestamp>())
+                    }.toList()
+                    _runData.update {
+                        it.copy(
+                            locations = newList
+                        )
+                    }
+                }
+
+            }
             .flatMapLatest { isTracking ->
                 if (isTracking) Timer.timeAndEmit()
                 else flowOf()

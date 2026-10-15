@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
 import io.github.giorgiomicheli.core.presentation.designsystem.StartIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.StopIcon
+import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyActionButton
 import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyDialog
 import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyFloatingActionButton
 import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyOutlinedActionButton
@@ -126,6 +127,7 @@ private fun ActiveRunScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
+        submitPermissionInfo()
         //val locationPermanentlyDenied = submitPermissionInfo()
 
         val showLocationRationale = activity.shouldShowLocationPermissionRationale()
@@ -194,6 +196,36 @@ private fun ActiveRunScreen(
                 runData = state.runData,
             )
         }
+    }
+
+    if (!state.shouldTrack && state.hasStartedRunning) {
+        RunlyDialog(
+            title = stringResource(id = R.string.running_is_paused),
+            onDismiss = {
+                onAction(ActiveRunAction.OnResumeRunClick)
+            },
+            description = stringResource(R.string.resume_or_finish_run),
+            primaryButton = {
+                RunlyActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.resume),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.OnResumeRunClick)
+                    }
+                )
+            },
+            secondaryButton = {
+                RunlyOutlinedActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.finish),
+                    isLoading = state.isSavingRun,
+                    onClick = {
+                        onAction(ActiveRunAction.OnFinishRunClick)
+                    }
+                )
+            }
+        )
     }
 
     // Rationale's dialog (single refuse)

@@ -93,6 +93,9 @@ fun TrackerMap(
             zoomControlsEnabled = false
         )
     ) {
+
+        RunlyPolylines(locations = locations)
+
         if (!isRunFinished && currentLocation != null) {
             MarkerComposable(
                 currentLocation,

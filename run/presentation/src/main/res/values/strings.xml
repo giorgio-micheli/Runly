@@ -13,4 +13,8 @@
     <string name="okay">Okay</string>
     <string name="location_permanently_denied">Location permanently declined</string>
     <string name="open_settings">Open settings</string>
+    <string name="running_is_paused">Running is paused</string>
+    <string name="resume_or_finish_run">Do you want to resume or finish the workout?</string>
+    <string name="resume">Resume</string>
+    <string name="finish">Finish</string>
 </resources>
