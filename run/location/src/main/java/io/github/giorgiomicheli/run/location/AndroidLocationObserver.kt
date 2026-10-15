@@ -20,6 +20,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * This class encapsulate the complexity of the Google Play Services location api and expose it
+ * as a simple Kotlin Flow.
+ */
 class AndroidLocationObserver(
     private val context: Context
 ) : LocationObserver {
@@ -27,21 +31,25 @@ class AndroidLocationObserver(
     private val client = LocationServices.getFusedLocationProviderClient(context)
 
     override fun observeLocation(interval: Long): Flow<LocationWithAltitude> {
+        /*
+            Creates a flow from a callback based api, it internally uses a Channel to do that.
+         */
         return callbackFlow {
-            val locationManger = context.getSystemService<LocationManager>()!!
+            val locationManager = context.getSystemService<LocationManager>()!!
             var isGpsEnabled = false
             var isNetworkEnabled = false
 
             // While the device has not both the gps and network enabled we wait
             while(!isGpsEnabled && !isNetworkEnabled) {
-                isGpsEnabled = locationManger.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                isNetworkEnabled = locationManger.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 // We wait 3 seconds only if neither the gps and the network are enabled
                 if (!isGpsEnabled && !isNetworkEnabled) {
                     delay(3.seconds)
                 }
             }
 
+            // Check if the location permissions on the device are granted
             if (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -52,6 +60,8 @@ class AndroidLocationObserver(
             ) {
                 close()
             } else {
+
+                // Retrieves the cached last known position, it's used as an initial value for the flow
                 client.lastLocation.addOnSuccessListener {
                     it?.let {location ->
                         trySend(location.toLocationWithAltitude())
@@ -71,7 +81,7 @@ class AndroidLocationObserver(
                 }
 
                 client.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
-
+                // Unregister the callback when nobody is no more collecting the flow
                 awaitClose {
                     client.removeLocationUpdates(locationCallback)
                 }
