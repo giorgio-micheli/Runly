@@ -43,6 +43,7 @@ import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyT
 import io.github.giorgiomicheli.core.presentation.ui.ObserveAsEvents
 import io.github.giorgiomicheli.run.presentation.R
 import io.github.giorgiomicheli.run.presentation.active_run.components.RunDataCard
+import io.github.giorgiomicheli.run.presentation.active_run.maps.TrackerMap
 import io.github.giorgiomicheli.run.presentation.util.hasLocationPermission
 import io.github.giorgiomicheli.run.presentation.util.hasNotificationPermission
 import io.github.giorgiomicheli.run.presentation.util.shouldShowLocationPermissionRationale
@@ -175,6 +176,15 @@ private fun ActiveRunScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
+            TrackerMap(
+                modifier = Modifier
+                    .fillMaxSize(),
+                isRunFinished = state.isRunFinished,
+                currentLocation = state.currentLocation,
+                locations = state.runData.locations,
+                onSnapshot = {}
+            )
+
             RunDataCard(
                 modifier = Modifier
                     .padding(16.dp)
