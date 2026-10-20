@@ -3,8 +3,11 @@
 package io.github.giorgiomicheli.run.presentation.active_run
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -12,24 +15,35 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.visible
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
@@ -43,6 +57,7 @@ import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyS
 import io.github.giorgiomicheli.core.presentation.designsystem.components.RunlyToolbar
 import io.github.giorgiomicheli.core.presentation.ui.ObserveAsEvents
 import io.github.giorgiomicheli.run.presentation.R
+import io.github.giorgiomicheli.run.presentation.active_run.components.LocationWarning
 import io.github.giorgiomicheli.run.presentation.active_run.components.RunDataCard
 import io.github.giorgiomicheli.run.presentation.active_run.maps.TrackerMap
 import io.github.giorgiomicheli.run.presentation.util.hasLocationPermission
@@ -187,14 +202,21 @@ private fun ActiveRunScreen(
                 onSnapshot = {}
             )
 
-            RunDataCard(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .padding(padding)
-                    .fillMaxWidth(),
-                elapsedTime = state.elapsedTime,
-                runData = state.runData,
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RunDataCard(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .padding(padding)
+                        .fillMaxWidth(),
+                    elapsedTime = state.elapsedTime,
+                    runData = state.runData,
+                )
+                LocationWarning()
+            }
+
         }
     }
 
@@ -271,6 +293,8 @@ private fun ActiveRunScreen(
         )
     }
 }
+
+
 
 private fun ActivityResultLauncher<Array<String>>.requestRunlyPermissions(
     context: Context

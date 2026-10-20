@@ -1,5 +1,16 @@
 package io.github.giorgiomicheli.core.presentation.designsystem.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateSizeAsState
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,13 +20,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import io.github.giorgiomicheli.core.presentation.designsystem.RunIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
 
@@ -27,13 +44,30 @@ fun RunlyFloatingActionButton(
     contentDescription: String? = null,
     iconSize: Dp = 25.dp
 ) {
+    val primary = MaterialTheme.colorScheme.primary
+
+    val transition = rememberInfiniteTransition(label = "pulse")
+    val progress by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "progress"
+    )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(75.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .drawBehind {
+                // 'progress' is read only here, only the draw phase changes.
+                drawPulse(progress, phaseOffset = 0f, baseAlpha = 0.4f, color = primary)
+                //drawPulse(progress, phaseOffset = 0.25f, baseAlpha = 0.5f, color = primary)
+            },
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -52,6 +86,21 @@ fun RunlyFloatingActionButton(
             )
         }
     }
+}
+
+private fun DrawScope.drawPulse(
+    progress: Float,
+    phaseOffset: Float,
+    baseAlpha: Float,
+    color: Color
+) {
+    val phase = (progress + phaseOffset) % 1f
+    val eased = FastOutSlowInEasing.transform(phase)
+    drawCircle(
+        color = color,
+        radius = lerp(25.dp.toPx(), 37.5.dp.toPx(), eased), // 50.dp -> 75.dp di diametro
+        alpha = baseAlpha * (1f - phase)
+    )
 }
 
 @Preview

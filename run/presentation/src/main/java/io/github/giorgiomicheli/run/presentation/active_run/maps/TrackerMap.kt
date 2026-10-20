@@ -79,7 +79,7 @@ fun TrackerMap(
         if(currentLocation != null && !isRunFinished) {
             val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
             cameraPositionState.animate(
-                CameraUpdateFactory.newLatLngZoom(latLng, 17f)
+                CameraUpdateFactory.newLatLngZoom(latLng, 16.7f)
             )
         }
     }

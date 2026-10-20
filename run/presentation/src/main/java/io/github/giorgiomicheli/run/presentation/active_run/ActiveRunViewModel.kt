@@ -21,6 +21,7 @@ class ActiveRunViewModel(
     private val runningTracker: RunningTracker
 ) : ViewModel() {
 
+    // Jetpack Compose state
     var state by mutableStateOf(ActiveRunState())
         private set
 
