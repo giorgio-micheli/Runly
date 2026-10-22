@@ -22,6 +22,15 @@ fun Double.toFormattedKM(): String {
     return "${this.roundToDecimals(1)} km"
 }
 
+fun Double.toFormattedKmh(): String {
+    return "${roundToDecimals(1)} km/h"
+}
+
+fun Int.toFormattedMeters(): String {
+    return "$this m"
+}
+
+
 fun Duration.toFormattedPace(distanceKM: Double): String {
     if (this == Duration.ZERO || distanceKM <= 0.0) return "-"
 
