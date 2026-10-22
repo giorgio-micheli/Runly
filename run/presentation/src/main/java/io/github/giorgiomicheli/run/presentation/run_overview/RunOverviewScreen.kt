@@ -89,7 +89,8 @@ private fun RunOverviewScreen(
                 icon = RunIcon,
                 onClick = {
                     onAction(RunOverviewAction.OnStartClick)
-                }
+                },
+                isRunning = false
             )
         }
     ) { padding ->

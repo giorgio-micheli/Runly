@@ -1,5 +1,6 @@
 package io.github.giorgiomicheli.core.presentation.designsystem.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -20,7 +21,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,21 +44,28 @@ fun RunlyFloatingActionButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     onClick: () -> Unit,
+    isRunning: Boolean,
     contentDescription: String? = null,
     iconSize: Dp = 25.dp
 ) {
     val primary = MaterialTheme.colorScheme.primary
 
-    val transition = rememberInfiniteTransition(label = "pulse")
-    val progress by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "progress"
-    )
+    val progress = remember { Animatable(0f) }
+
+    LaunchedEffect(isRunning) {
+        if (!isRunning) {
+            progress.snapTo(0f)
+            progress.animateTo(
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(2000, easing = LinearEasing),
+                    repeatMode = RepeatMode.Restart
+                )
+            )
+        } else {
+            progress.snapTo(0f)
+        }
+    }
 
     Box(
         modifier = modifier
@@ -64,9 +74,10 @@ fun RunlyFloatingActionButton(
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
             .clickable(onClick = onClick)
             .drawBehind {
-                // 'progress' is read only here, only the draw phase changes.
-                drawPulse(progress, phaseOffset = 0f, baseAlpha = 0.4f, color = primary)
-                //drawPulse(progress, phaseOffset = 0.25f, baseAlpha = 0.5f, color = primary)
+                if (!isRunning) {
+                    // 'progress' is read only here, only the draw phase changes.
+                    drawPulse(progress.value, phaseOffset = 0f, baseAlpha = 0.4f, color = primary)
+                }
             },
         contentAlignment = Alignment.Center
     ) {
@@ -110,6 +121,7 @@ private fun RunlyFloatingActionButtonPreview() {
         RunlyFloatingActionButton(
             icon = RunIcon,
             onClick = {},
+            isRunning = false
         )
     }
 }
