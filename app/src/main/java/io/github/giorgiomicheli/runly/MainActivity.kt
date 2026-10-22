@@ -25,6 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModel<MainViewModel>()
+    // reactive compose state
     private var newDeepLinkIntent by mutableStateOf<Intent?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {

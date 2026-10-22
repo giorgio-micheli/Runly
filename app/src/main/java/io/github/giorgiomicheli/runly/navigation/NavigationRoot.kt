@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -28,15 +29,17 @@ import io.github.giorgiomicheli.auth.presentation.intro.IntroScreenRoot
 import io.github.giorgiomicheli.auth.presentation.login.LoginScreenRoot
 import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
 import io.github.giorgiomicheli.run.presentation.active_run.ActiveRunScreenRoot
+import io.github.giorgiomicheli.run.presentation.active_run.service.ActiveRunService
 import io.github.giorgiomicheli.run.presentation.run_overview.RunOverviewScreenRoot
+import io.github.giorgiomicheli.runly.MainActivity
 
 val durata = 400
 
 /**
- * @param launchIntent: the link that the app was launched with, if it contains a valid link then
+ * @param launchIntent the link that the app was launched with. If it contains a valid link then
  * we start from there, otherwise we start from the homeScreen as usual, based on if the user is already logged in or not.
- * @param newIntent: a link that arrived when the app was already opened.
- * @param onNewIntentConsumed: what to do after the newIntent has been consumed. We reset the variable in the mainActivity to null.
+ * @param newIntent a link that arrived when the app was already opened.
+ * @param onNewIntentConsumed what to do after the newIntent has been consumed. We reset the variable in the mainActivity to null.
  */
 @Composable
 fun NavigationRoot(
@@ -131,7 +134,28 @@ fun NavigationRoot(
                 )
             }
             entry<AppRoute.ActiveRun> {
+                val context = LocalContext.current
                 ActiveRunScreenRoot(
+                    onServiceToggle = {shouldServiceRun ->
+                        if (shouldServiceRun) {
+                            context.startService(
+                                ActiveRunService.createStartIntent(
+                                    context = context,
+                                    activityClass = MainActivity::class.java
+                                )
+                            )
+                        } else {
+                            /*
+                            Here it's a little bit confusing, we still use the startService but
+                            we're actually passing an intent that will be interpreted like a stop
+                            command.
+                             */
+                            context.startService(
+                                ActiveRunService.createStopIntent(context)
+                            )
+                        }
+
+                    },
                     onBackClick = {
                         backStack.removeLastOrNull()
                     }

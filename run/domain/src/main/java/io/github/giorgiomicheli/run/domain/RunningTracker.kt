@@ -3,14 +3,12 @@ package io.github.giorgiomicheli.run.domain
 import io.github.giorgiomicheli.core.domain.Timer
 import io.github.giorgiomicheli.core.domain.location.LocationTimestamp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -44,7 +42,9 @@ class RunningTracker(
     val runData = _runData.asStateFlow()
 
     // This state flow is used to indicate that we're actively tracking a run
-    private val isTracking = MutableStateFlow(false)
+    private val _isTracking = MutableStateFlow(false)
+    val isTracking = _isTracking.asStateFlow()
+
     // This state flow will instead indicate that we're tracking the user's location
     // We need two separate states because we want to update the position of the user on the map even
     // if he didn't press on "start tracking run"
@@ -68,7 +68,7 @@ class RunningTracker(
     init {
         // We only want to track the user's time only if isTracking is true and whenever it changes
         // we also want to stop if it's false
-        isTracking
+        _isTracking
             .onEach { isTracking ->
                 if (!isTracking) {
                     val newList = buildList {
@@ -94,7 +94,7 @@ class RunningTracker(
 
         currentLocation
             .filterNotNull()
-            .combineTransform(isTracking) { location, isTracking ->
+            .combineTransform(_isTracking) { location, isTracking ->
                 if(isTracking) {
                     emit(location)
                 }
@@ -134,7 +134,7 @@ class RunningTracker(
     }
 
     fun setIsTracking(isTracking: Boolean) {
-        this.isTracking.value = isTracking
+        this._isTracking.value = isTracking
     }
 
     fun startObservingLocation() {

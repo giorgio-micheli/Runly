@@ -7,6 +7,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.giorgiomicheli.run.domain.RunningTracker
+import io.github.giorgiomicheli.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +23,10 @@ class ActiveRunViewModel(
 ) : ViewModel() {
 
     // Jetpack Compose state
-    var state by mutableStateOf(ActiveRunState())
+    var state by mutableStateOf(ActiveRunState(
+        shouldTrack = ActiveRunService.isServiceActive && runningTracker.isTracking.value,
+        hasStartedRunning = ActiveRunService.isServiceActive
+    ))
         private set
 
     private val eventChannel = Channel<ActiveRunEvent>()
@@ -108,7 +112,11 @@ class ActiveRunViewModel(
                 }
             }
             ActiveRunAction.OnFinishRunClick -> {
-
+                // temporary
+                state = state.copy(
+                    hasStartedRunning = false,
+                    isRunFinished = true
+                )
             }
             ActiveRunAction.OnResumeRunClick -> {
                 state = state.copy(shouldTrack = true)
@@ -143,6 +151,18 @@ class ActiveRunViewModel(
     private fun backButtonPressed() {
         viewModelScope.launch {
             eventChannel.send(ActiveRunEvent.BackButtonPressed)
+        }
+    }
+
+    // When the viewModel is cleared
+    override fun onCleared() {
+        /*
+        If we just open the ActiveRun Screen without starting a run and then we just go back to the
+        previous screen, we want to stop observing the location cause we're in the RunOverview Screen
+        and we don't need to listen to the location of the user there.
+         */
+        if (!ActiveRunService.isServiceActive) {
+            runningTracker.stopObservingLocation()
         }
     }
 }

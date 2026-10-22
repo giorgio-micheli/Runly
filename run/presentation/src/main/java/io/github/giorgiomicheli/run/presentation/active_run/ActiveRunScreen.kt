@@ -60,6 +60,7 @@ import io.github.giorgiomicheli.run.presentation.R
 import io.github.giorgiomicheli.run.presentation.active_run.components.LocationWarning
 import io.github.giorgiomicheli.run.presentation.active_run.components.RunDataCard
 import io.github.giorgiomicheli.run.presentation.active_run.maps.TrackerMap
+import io.github.giorgiomicheli.run.presentation.active_run.service.ActiveRunService
 import io.github.giorgiomicheli.run.presentation.util.hasLocationPermission
 import io.github.giorgiomicheli.run.presentation.util.hasNotificationPermission
 import io.github.giorgiomicheli.run.presentation.util.shouldShowLocationPermissionRationale
@@ -68,6 +69,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ActiveRunScreenRoot(
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
     viewModel: ActiveRunViewModel = koinViewModel(),
     onBackClick: () -> Unit
 ) {
@@ -80,6 +82,7 @@ fun ActiveRunScreenRoot(
 
     ActiveRunScreen(
         state = viewModel.state,
+        onServiceToggle = onServiceToggle,
         onAction = viewModel::onAction
     )
 }
@@ -87,6 +90,7 @@ fun ActiveRunScreenRoot(
 @Composable
 private fun ActiveRunScreen(
     state: ActiveRunState,
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
     onAction: (ActiveRunAction) -> Unit
 ) {
     val context = LocalContext.current
@@ -153,13 +157,24 @@ private fun ActiveRunScreen(
             permissionLauncher.requestRunlyPermissions(context)
         }
     }
-
     // When the user comes back from the app's settings we update the state
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         if (showSettingsDialog && context.hasLocationPermission()) {
             showSettingsDialog = false
             submitPermissionInfo()
         }
+    }
+
+    // When we start tracking the run we also start the foreground service
+    LaunchedEffect(key1 = state.shouldTrack) {
+        if (context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
+            onServiceToggle(true)
+        }
+    }
+
+    // If the run is finished we stop the foreground service
+    LaunchedEffect(key1 = state.isRunFinished) {
+        if (state.isRunFinished) onServiceToggle(false)
     }
 
     RunlyScaffold(
@@ -179,6 +194,7 @@ private fun ActiveRunScreen(
                 onClick = {
                     onAction(ActiveRunAction.OnToggleRunClick)
                 },
+                isRunning = state.shouldTrack,
                 iconSize = 20.dp,
                 contentDescription = if (state.shouldTrack) {
                     stringResource(id = R.string.pause_run)
@@ -335,6 +351,7 @@ private fun ActiveRunScreenPreview() {
     RunlyTheme {
         ActiveRunScreen(
             state = ActiveRunState(),
+            onServiceToggle = {},
             onAction = {}
         )
     }
