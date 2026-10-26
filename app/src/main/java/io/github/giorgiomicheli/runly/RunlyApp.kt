@@ -4,13 +4,19 @@ import android.app.Application
 import io.github.giorgiomicheli.auth.data.di.authDataModule
 import io.github.giorgiomicheli.auth.presentation.di.authViewModelModule
 import io.github.giorgiomicheli.core.data.di.coreDataModule
+import io.github.giorgiomicheli.run.location.di.locationModule
+import io.github.giorgiomicheli.run.presentation.di.runViewModelModule
 import io.github.giorgiomicheli.runly.di.appModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
 class RunlyApp : Application() {
+
+    val applicationScope = CoroutineScope(SupervisorJob())
 
     override fun onCreate() {
         super.onCreate()
@@ -26,7 +32,9 @@ class RunlyApp : Application() {
                 authDataModule,
                 authViewModelModule,
                 appModule,
-                coreDataModule
+                coreDataModule,
+                runViewModelModule,
+                locationModule
             )
         }
     }

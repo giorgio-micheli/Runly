@@ -1,5 +1,7 @@
 package io.github.giorgiomicheli.runly
 
+import android.app.ComponentCaller
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -20,6 +25,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModel<MainViewModel>()
+    // reactive compose state
+    private var newDeepLinkIntent by mutableStateOf<Intent?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,11 +42,20 @@ class MainActivity : ComponentActivity() {
                     if (!viewModel.state.isCheckingAuth) {
                         NavigationRoot(
                             modifier = Modifier.padding(innerPadding),
-                            isLoggedIn = viewModel.state.isLoggedIn
+                            isLoggedIn = viewModel.state.isLoggedIn,
+                            launchIntent = intent,
+                            newIntent = newDeepLinkIntent,
+                            onNewIntentConsumed = { newDeepLinkIntent = null }
                         )
                     }
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+        super.onNewIntent(intent, caller)
+        setIntent(intent)
+        newDeepLinkIntent = intent
     }
 }
