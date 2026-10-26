@@ -4,6 +4,7 @@ import android.app.Application
 import io.github.giorgiomicheli.auth.data.di.authDataModule
 import io.github.giorgiomicheli.auth.presentation.di.authViewModelModule
 import io.github.giorgiomicheli.core.data.di.coreDataModule
+import io.github.giorgiomicheli.core.database.di.databaseModule
 import io.github.giorgiomicheli.run.location.di.locationModule
 import io.github.giorgiomicheli.run.presentation.di.runViewModelModule
 import io.github.giorgiomicheli.runly.di.appModule
@@ -34,7 +35,8 @@ class RunlyApp : Application() {
                 appModule,
                 coreDataModule,
                 runViewModelModule,
-                locationModule
+                locationModule,
+                databaseModule
             )
         }
     }
