@@ -1,6 +1,5 @@
-package io.github.giorgiomicheli.run.domain
+package io.github.giorgiomicheli.core.domain.run
 
-import io.github.giorgiomicheli.core.domain.run.Run
 import io.github.giorgiomicheli.core.domain.util.DataFailure
 import io.github.giorgiomicheli.core.domain.util.EmptyResult
 import io.github.giorgiomicheli.core.domain.util.Result
@@ -8,7 +7,7 @@ import io.github.giorgiomicheli.core.domain.util.Result
 interface RemoteRunDataSource {
 
     /**
-     * Fetch new runs from the back-end
+     * Retrieves all the runs associated with the current local user from the remote data source.
      * @return a list of runs if the api-call was successfull, a network failure otherwise.
      */
     suspend fun getRuns(): Result<List<Run>, DataFailure.Network>
