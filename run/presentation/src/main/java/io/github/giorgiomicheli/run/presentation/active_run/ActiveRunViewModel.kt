@@ -6,6 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.giorgiomicheli.core.domain.location.Location
+import io.github.giorgiomicheli.core.domain.run.Run
+import io.github.giorgiomicheli.run.domain.LocationDataCalculator
 import io.github.giorgiomicheli.run.domain.RunningTracker
 import io.github.giorgiomicheli.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
@@ -17,6 +20,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class ActiveRunViewModel(
     private val runningTracker: RunningTracker
@@ -114,7 +119,7 @@ class ActiveRunViewModel(
             ActiveRunAction.OnFinishRunClick -> {
                 // temporary
                 state = state.copy(
-                    hasStartedRunning = false,
+                    isSavingRun = true,
                     isRunFinished = true
                 )
             }
@@ -145,6 +150,38 @@ class ActiveRunViewModel(
                     showLocationRationale = false
                 )
             }
+            is ActiveRunAction.OnRunProcessed -> {
+                finishRun(action.mapPictureBytes)
+            }
+        }
+    }
+
+    private fun finishRun(mapPictureBytes: ByteArray) {
+        val locations = state.runData.locations
+        // We consider a valid run to have at least two locations
+        // otherwise we can't calculate speed and all the other parameters based only on one point in the map.
+        if (locations.isEmpty() || locations.first().size <= 1) {
+            state = state.copy(isSavingRun = false)
+            return
+        }
+
+        viewModelScope.launch {
+            val run = Run(
+                id = null,
+                duration = state.elapsedTime,
+                dateTimeUtc = ZonedDateTime.now()
+                    .withZoneSameInstant(ZoneId.of("UTC")),
+                distanceMeters = state.runData.distanceMeters,
+                location = state.currentLocation ?: Location(0.0, 0.0),
+                maxSpeedKmh = LocationDataCalculator.getMaxSpeed(locations),
+                totalElevationMeters = LocationDataCalculator.getTotalElevationMeters(locations),
+                mapPictureUrl = null
+            )
+
+            //TODO: save the run in the repository
+
+            runningTracker.finishRun()
+            state = state.copy(isSavingRun = false)
         }
     }
 
