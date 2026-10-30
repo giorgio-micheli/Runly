@@ -8,6 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.giorgiomicheli.core.domain.location.Location
 import io.github.giorgiomicheli.core.domain.run.Run
+import io.github.giorgiomicheli.core.domain.run.RunRepository
+import io.github.giorgiomicheli.core.domain.util.Result
+import io.github.giorgiomicheli.core.presentation.ui.asUiText
 import io.github.giorgiomicheli.run.domain.LocationDataCalculator
 import io.github.giorgiomicheli.run.domain.RunningTracker
 import io.github.giorgiomicheli.run.presentation.active_run.service.ActiveRunService
@@ -24,7 +27,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class ActiveRunViewModel(
-    private val runningTracker: RunningTracker
+    private val runningTracker: RunningTracker,
+    private val runRepository: RunRepository
 ) : ViewModel() {
 
     // Jetpack Compose state
@@ -178,9 +182,17 @@ class ActiveRunViewModel(
                 mapPictureUrl = null
             )
 
-            //TODO: save the run in the repository
-
             runningTracker.finishRun()
+
+            when(val result = runRepository.upsertRun(run, mapPictureBytes)) {
+                is Result.Failure -> {
+                    eventChannel.send(ActiveRunEvent.Error(result.failure.asUiText()))
+                }
+                is Result.Success -> {
+                    eventChannel.send(ActiveRunEvent.RunSaved)
+                }
+            }
+
             state = state.copy(isSavingRun = false)
         }
     }

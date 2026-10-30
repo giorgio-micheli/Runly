@@ -158,6 +158,9 @@ fun NavigationRoot(
                     },
                     onBackClick = {
                         backStack.removeLastOrNull()
+                    },
+                    onFinish = {
+                        backStack.removeLastOrNull()
                     }
                 )
             }

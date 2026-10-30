@@ -6,6 +6,7 @@ import io.github.giorgiomicheli.auth.presentation.di.authViewModelModule
 import io.github.giorgiomicheli.core.data.di.coreDataModule
 import io.github.giorgiomicheli.core.database.di.databaseModule
 import io.github.giorgiomicheli.run.location.di.locationModule
+import io.github.giorgiomicheli.run.network.di.networkModule
 import io.github.giorgiomicheli.run.presentation.di.runViewModelModule
 import io.github.giorgiomicheli.runly.di.appModule
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,8 @@ class RunlyApp : Application() {
                 coreDataModule,
                 runViewModelModule,
                 locationModule,
-                databaseModule
+                databaseModule,
+                networkModule
             )
         }
     }

@@ -1,5 +1,8 @@
 package io.github.giorgiomicheli.run.network
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CreateRunRequest(
     val id: String,
     val durationMillis: Long,
