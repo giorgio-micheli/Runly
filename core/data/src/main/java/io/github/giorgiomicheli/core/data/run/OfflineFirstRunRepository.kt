@@ -80,6 +80,19 @@ class OfflineFirstRunRepository(
 
     override suspend fun deleteRun(id: RunId) {
         localRunDataSource.deleteRun(id)
+        /*
+        EDGE CASE:
+        If the run that we're deleting hasn't been synced to the backend yet,
+        so there's still a record related to it in the pending runs table,
+        we just delete that record.
+        Since the creation and the deletion of this run only happend locally
+        we don't have to send anything to the backend, so we return.
+         */
+        val hasAPendingSync = runPendingSyncDao.getRunPendingSyncEntity(id) != null
+        if (hasAPendingSync) {
+            runPendingSyncDao.deleteRunPendingSyncEntity(id)
+            return
+        }
 
         val remoteResult = applicationScope.async {
             remoteRunDataSource.deleteRun(id)

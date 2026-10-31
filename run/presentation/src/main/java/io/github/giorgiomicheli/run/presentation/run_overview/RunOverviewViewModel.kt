@@ -35,6 +35,12 @@ class RunOverviewViewModel(
 
         // executed only one time, it's not a flow
         viewModelScope.launch {
+            /*
+            Only after syncing the pending runs that we still have locally
+            we know that the backend is up-to-date.
+            So the runs that we fetch after the sync reflect the real runs.
+             */
+            runRepository.syncPendingRuns()
             runRepository.fetchRuns()
         }
     }
