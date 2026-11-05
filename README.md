@@ -162,9 +162,12 @@ build-logic/            → Gradle convention plugins
 ## 🙏 Credits
 
 This app was built while following the **Runique** course by
-[Philipp Lackner](https://pl-coding.com). The back-end API used by the app is
-provided and maintained by the course, so an API key from the course is
-required to connect to it.
+[Philipp Lackner](https://pl-coding.com). The app currently relies on the
+back-end API provided and maintained by the course, so an API key from the
+course is required to connect to it.
+
+I'm planning to write my own back-end as well: once it's ready, Runly will
+switch to it and will no longer depend on the course's API.
 
 ---
 
