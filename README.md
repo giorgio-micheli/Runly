@@ -159,6 +159,15 @@ build-logic/            → Gradle convention plugins
    ./gradlew lint
    ```
 
+## 🙏 Credits
+
+This app was built while following the **Runique** course by
+[Philipp Lackner](https://pl-coding.com). The back-end API used by the app is
+provided and maintained by the course, so an API key from the course is
+required to connect to it.
+
+---
+
 <div align="center">
 
 Made with 💚 in Kotlin & Jetpack Compose
