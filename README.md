@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1>
-  <img src="screenshots/logo.svg" alt="Runly logo" height="44" align="center">&nbsp;Runly
+  <img src="screenshots/logo.svg" alt="Runly logo" height="40" align="top">&nbsp;Runly
 </h1>
 
 **Track every run, with a tap.**
