@@ -2,7 +2,7 @@
 
 # 🏃 Runly
 
-**Track every run, online or offline.**
+**Track every run, with a tap.**
 
 Offline-first Android running tracker with live GPS tracking,
 real-time stats and automatic background sync with the back-end.
@@ -36,8 +36,8 @@ back-end as soon as the network comes back.
 - 📲 **Background tracking** — a foreground service keeps the run going even
   when the app is in the background or removed from recents.
 - 📋 **Run overview** — all your saved runs with their stats in one list.
-- 📴 **Offline-first** — runs are always available, with or without a
-  connection (see below).
+- 📴 **Offline-first** — runs are always available, with or without an internet
+  connection.
 - 🔗 **Deep links** — `runly://active_run` takes you straight back to the
   ongoing run.
 
@@ -54,7 +54,7 @@ from Room, so the app behaves the same way with or without a connection.
   and shows up in the list right away, even when offline.
 - 🕒 **Pending sync queue** — if a run can't be uploaded (or deleted) on the
   server, the operation is stored in a dedicated sync table instead of being
-  lost.
+  lost, and the api call is retried later.
 - 🔄 **Background sync** — **WorkManager** workers upload pending runs,
   propagate pending deletions and periodically fetch runs from the back-end.
   They run only when the network is available and retry automatically on
@@ -101,8 +101,8 @@ build-logic/            → Gradle convention plugins
 | Category | Library |
 |---|---|
 | Language | Kotlin + Coroutines / Flow |
-| UI | Jetpack Compose (BOM) + Material 3 |
-| Navigation | Navigation 3 (`androidx.navigation3`) |
+| UI | Jetpack Compose |
+| Navigation | Navigation 3 |
 | Persistence | Room |
 | Background sync | WorkManager |
 | Networking | Ktor Client |
@@ -127,8 +127,7 @@ build-logic/            → Gradle convention plugins
    git clone https://github.com/giorgio-micheli/Runly.git
    ```
 
-2. Add your keys to `local.properties` in the project root (this file is
-   ignored by git):
+2. Add your keys to `local.properties` in the project root:
 
    ```properties
    API_KEY=your_backend_api_key
