@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🏃 Runly
+<h1>
+  <img src="screenshots/logo.svg" alt="Runly logo" height="44" align="center">&nbsp;Runly
+</h1>
 
 **Track every run, with a tap.**
 
@@ -13,10 +15,16 @@ real-time stats and automatic background sync with the back-end.
 ![Ktor](https://img.shields.io/badge/Ktor-087CFA?logo=ktor&logoColor=white)
 ![Min SDK](https://img.shields.io/badge/minSdk-29%20(Android%2010)-orange)
 ![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
+![Status](https://img.shields.io/badge/status-work%20in%20progress-yellow)
 
 </div>
 
 ---
+
+> [!WARNING]
+> 🚧 **Work in progress** — Runly is still under active development. Some
+> features are incomplete or may change, and you may run into bugs along the
+> way.
 
 ## 📖 Overview
 
