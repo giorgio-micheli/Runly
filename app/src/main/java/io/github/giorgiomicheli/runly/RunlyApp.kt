@@ -4,13 +4,17 @@ import android.app.Application
 import io.github.giorgiomicheli.auth.data.di.authDataModule
 import io.github.giorgiomicheli.auth.presentation.di.authViewModelModule
 import io.github.giorgiomicheli.core.data.di.coreDataModule
+import io.github.giorgiomicheli.core.database.di.databaseModule
+import io.github.giorgiomicheli.run.data.di.runDataModule
 import io.github.giorgiomicheli.run.location.di.locationModule
+import io.github.giorgiomicheli.run.network.di.networkModule
 import io.github.giorgiomicheli.run.presentation.di.runViewModelModule
 import io.github.giorgiomicheli.runly.di.appModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
@@ -28,13 +32,17 @@ class RunlyApp : Application() {
         startKoin {
             androidLogger()
             androidContext(this@RunlyApp)
+            workManagerFactory()
             modules(
                 authDataModule,
                 authViewModelModule,
                 appModule,
                 coreDataModule,
                 runViewModelModule,
-                locationModule
+                locationModule,
+                databaseModule,
+                networkModule,
+                runDataModule
             )
         }
     }

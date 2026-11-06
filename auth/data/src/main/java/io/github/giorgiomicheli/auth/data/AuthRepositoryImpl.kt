@@ -9,6 +9,8 @@ import io.github.giorgiomicheli.core.domain.util.EmptyResult
 import io.github.giorgiomicheli.core.domain.util.Result
 import io.github.giorgiomicheli.core.domain.util.asEmptyDataResult
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.authProviders
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 
 class AuthRepositoryImpl(
     private val httpClient: HttpClient,
@@ -31,6 +33,12 @@ class AuthRepositoryImpl(
                     userID = result.data.userID
                 )
             )
+            // Ktor caches the tokens loaded before login (empty ones): drop them so the new
+            // access token is loaded from the session storage on the next request
+            httpClient.authProviders
+                .filterIsInstance<BearerAuthProvider>()
+                .firstOrNull()
+                ?.clearToken()
         }
         return result.asEmptyDataResult()
     }
