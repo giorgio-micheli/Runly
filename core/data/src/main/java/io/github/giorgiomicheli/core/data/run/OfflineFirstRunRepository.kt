@@ -70,30 +70,18 @@ class OfflineFirstRunRepository(
         // We synchronize the local data to the back-end by sending a post request with the Run
         // object with the ID
         val runWithId = run.copy(id = localResult.data)
-        val remoteResult = remoteRunDataSource.postRun(
-            run = runWithId,
-            mapPicture = mapPicture
-        )
 
-        return when (remoteResult) {
-            is Result.Failure -> {
-                applicationScope.launch {
-                    syncRunScheduler.scheduleSync(
-                        type = SyncRunScheduler.SyncType.CreateRun(
-                            run = runWithId,
-                            mapPictureBytes = mapPicture
-                        )
-                    )
-                }.join()
 
-                Result.Success(Unit)
-            }
-            is Result.Success -> {
-                applicationScope.async {
-                    localRunDataSource.upsertRun(remoteResult.data).asEmptyDataResult()
-                }.await()
-            }
-        }
+        applicationScope.launch {
+            syncRunScheduler.scheduleSync(
+                type = SyncRunScheduler.SyncType.CreateRun(
+                    run = runWithId,
+                    mapPictureBytes = mapPicture
+                )
+            )
+        }.join()
+
+        return Result.Success(Unit)
     }
 
     override suspend fun deleteRun(id: RunId) {

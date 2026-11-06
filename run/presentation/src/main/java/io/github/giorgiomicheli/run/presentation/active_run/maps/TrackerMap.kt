@@ -16,6 +16,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,21 +45,22 @@ import io.github.giorgiomicheli.core.domain.location.Location
 import io.github.giorgiomicheli.core.domain.location.LocationTimestamp
 import io.github.giorgiomicheli.core.presentation.designsystem.RunIcon
 import io.github.giorgiomicheli.run.presentation.R
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
-@OptIn(MapsComposeExperimentalApi::class, DelicateCoroutinesApi::class)
+private val SNAPSHOT_TIMEOUT = 5.seconds
+
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun TrackerMap(
     modifier: Modifier,
     isRunFinished: Boolean,
     currentLocation: Location?,
     locations: List<List<LocationTimestamp>>,
-    onSnapshot: (Bitmap) -> Unit,
+    onSnapshot: (Bitmap?) -> Unit,
 ) {
     val context = LocalContext.current
     val mapStyle = remember {
@@ -101,12 +104,33 @@ fun TrackerMap(
     }
 
     // Capture the map's snapshot when true
-    var triggerCapture by remember {
-        mutableStateOf(false)
+    var triggerCapture by remember { mutableStateOf(false) }
+
+    var hasDeliveredSnapshot by remember { mutableStateOf(false) }
+
+    val snapshotJob = remember { mutableStateOf<Job?>(null) }
+
+    val scope = rememberCoroutineScope()
+
+    val currentOnSnapshot by rememberUpdatedState(onSnapshot)
+
+    fun deliverSnapshot(bitmap: Bitmap?) {
+        if (hasDeliveredSnapshot) return
+        hasDeliveredSnapshot = true
+        snapshotJob.value?.cancel()
+        currentOnSnapshot(bitmap)
     }
 
-    var createSnapshotJob: Job? = remember {
-        null
+    /*
+    Safety net: whatever happens (the camera idle listener never fires, awaitSnapshot() hangs or
+    returns null) after SNAPSHOT_TIMEOUT the caller gets an answer, so the loading can't spin forever.
+    If the real snapshot was already delivered, deliverSnapshot() ignores this call.
+     */
+    LaunchedEffect(isRunFinished) {
+        if (isRunFinished) {
+            delay(SNAPSHOT_TIMEOUT)
+            deliverSnapshot(null)
+        }
     }
 
     GoogleMap(
@@ -120,47 +144,52 @@ fun TrackerMap(
                 }
         } else modifier,
         cameraPositionState = cameraPositionState,
-        properties = MapProperties(
-            mapStyleOptions = mapStyle
-        ),
-        uiSettings = MapUiSettings(
-            zoomControlsEnabled = false
-        )
+        properties = MapProperties(mapStyleOptions = mapStyle),
+        uiSettings = MapUiSettings(zoomControlsEnabled = false)
     ) {
 
         RunlyPolylines(locations = locations)
 
-        MapEffect(locations, isRunFinished, triggerCapture, createSnapshotJob) { map ->
-            if (isRunFinished && triggerCapture && createSnapshotJob == null) {
-                triggerCapture = false
+        MapEffect(locations, isRunFinished, triggerCapture) { map ->
+            if (!isRunFinished || !triggerCapture || hasDeliveredSnapshot) return@MapEffect
+            triggerCapture = false
 
-                val boundsBuilder = LatLngBounds.builder()
+            val points = locations.flatten()
+            // LatLngBounds.build() throws with no points: there's no map to capture, answer right away
+            if (points.isEmpty()) {
+                deliverSnapshot(null)
+                return@MapEffect
+            }
 
-                locations.flatten().forEach { location ->
-                    boundsBuilder
-                        .include(LatLng(
-                            location.location.location.latitude,
-                            location.location.location.longitude
-                        ))
+            // Register the listener BEFORE moving the camera, so the "idle" event can't be lost
+            map.setOnCameraIdleListener {
+                snapshotJob.value?.cancel()
+                snapshotJob.value = scope.launch {
+                    // We wait just to be sure that the map is focused and rendered properly
+                    // before taking the screenshot
+                    delay(500L.milliseconds)
+                    val bitmap = map.awaitSnapshot()
+                    map.setOnCameraIdleListener(null)
+                    // It may be null: the caller falls back to the placeholder image
+                    deliverSnapshot(bitmap)
                 }
-                map.moveCamera(
-                    CameraUpdateFactory.newLatLngBounds(
-                        boundsBuilder.build(),
-                        100
+            }
+
+            val boundsBuilder = LatLngBounds.builder()
+            points.forEach { location ->
+                boundsBuilder.include(
+                    LatLng(
+                        location.location.location.latitude,
+                        location.location.location.longitude
                     )
                 )
-
-                map.setOnCameraIdleListener {
-                    createSnapshotJob?.cancel()
-                    createSnapshotJob = GlobalScope.launch {
-                        // We wait just to be sure that the map is focused and rendered properly
-                        // before taking the screenshot
-                        delay(500L.milliseconds)
-                        map.awaitSnapshot()?.let(onSnapshot)
-                    }
-                }
-
             }
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    boundsBuilder.build(),
+                    100
+                )
+            )
         }
 
         if (!isRunFinished && currentLocation != null) {

@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.giorgiomicheli.core.database.dao.RunPendingSyncDao
 import io.github.giorgiomicheli.core.database.mappers.toDomain
+import io.github.giorgiomicheli.core.domain.run.LocalRunDataSource
 import io.github.giorgiomicheli.core.domain.run.RemoteRunDataSource
 
 /*
@@ -14,6 +15,7 @@ class CreateRunWorker(
     context: Context,
     private val params: WorkerParameters,
     private val remoteRunDataSource: RemoteRunDataSource,
+    private val localRunDataSource: LocalRunDataSource,
     private val pendingSyncDao: RunPendingSyncDao
 ): CoroutineWorker(context, params) {
 
@@ -37,17 +39,18 @@ class CreateRunWorker(
                 result.failure.toWorkerResult()
             }
             is io.github.giorgiomicheli.core.domain.util.Result.Success -> {
+                // We update the record in the local db with the same data and the image url generated
+                // by the back-end
+                localRunDataSource.upsertRun(result.data)
+                // This run is been synced with the back-end so we can delete it from the pending
+                // runs table.
                 pendingSyncDao.deleteRunPendingSyncEntity(pendingRunId)
                 Result.success()
             }
         }
-
-
     }
 
     companion object {
         const val RUN_ID = "RUN_ID"
     }
-
-
 }
