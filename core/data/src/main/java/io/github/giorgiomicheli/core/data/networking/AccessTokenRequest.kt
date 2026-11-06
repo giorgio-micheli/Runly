@@ -1,5 +1,6 @@
 package io.github.giorgiomicheli.core.data.networking
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /*
@@ -9,5 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AccessTokenRequest(
     val refreshToken: String,
+    // The backend expects "userId": with "userID" the request can't be parsed and returns 500
+    @SerialName("userId")
     val userID: String
 )

@@ -49,7 +49,6 @@ class KtorRemoteDataSource(
                     })
                     append("RUN_DATA", createRunRequestJson, Headers.build {
                         append(HttpHeaders.ContentType, "text/plain")
-                        append(HttpHeaders.ContentDisposition, "form-data; name=\"RUN_DATA\"")
                     })
                 }
             ) {
