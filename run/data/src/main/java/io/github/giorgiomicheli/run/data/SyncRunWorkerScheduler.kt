@@ -50,7 +50,7 @@ class SyncRunWorkerScheduler(
         )
         pendingSyncDao.upsertDeleteRunSyncEntity(entity)
 
-        val workRequest = OneTimeWorkRequestBuilder<CreateRunWorker>()
+        val workRequest = OneTimeWorkRequestBuilder<DeleteRunWorker>()
             .addTag("delete_work")
             .setConstraints(
                 Constraints.Builder()
@@ -80,10 +80,10 @@ class SyncRunWorkerScheduler(
             mapPictureBytes = mapPictureBytes,
             userId = userID
         )
+        // Insert the run in the pending runs table
         pendingSyncDao.upsertRunPendingSyncEntity(pendingRun)
 
-        val workRequest = OneTimeWorkRequestBuilder<CreateRunWorker>()
-            .addTag("create_work")
+        val workRequest = OneTimeWorkRequestBuilder<CreateRunWorker>().addTag("create_work")
             .setConstraints(
             Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
