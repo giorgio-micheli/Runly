@@ -37,12 +37,14 @@ import org.koin.core.component.getScopeId
 @Composable
 fun RunOverviewScreenRoot(
     viewModel: RunOverviewViewModel = koinViewModel(),
-    onActiveRunButtonClicked: () -> Unit
+    onActiveRunButtonClicked: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
 
     ObserveAsEvents(viewModel.events) {event ->
         when(event) {
             is RunOverviewEvent.ActiveRunButtonClicked -> onActiveRunButtonClicked()
+            is RunOverviewEvent.LogoutButtonClicked -> onLogoutClick()
         }
     }
 

@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.giorgiomicheli.core.domain.SessionStorage
 import io.github.giorgiomicheli.core.domain.run.RunRepository
 import io.github.giorgiomicheli.core.domain.run.SyncRunScheduler
 import io.github.giorgiomicheli.run.presentation.run_overview.mapper.toRunUi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -17,7 +19,9 @@ import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
     private val runRepository: RunRepository,
-    private val syncRunScheduler: SyncRunScheduler
+    private val syncRunScheduler: SyncRunScheduler,
+    private val applicationScope: CoroutineScope,
+    private val sessionStorage: SessionStorage
 ) : ViewModel() {
 
     var state by mutableStateOf(RunOverviewState())
@@ -64,6 +68,12 @@ class RunOverviewViewModel(
                     runRepository.deleteRun(action.runUi.id)
                 }
             }
+            is RunOverviewAction.OnLogoutClick -> {
+                logout()
+                viewModelScope.launch {
+                    eventChannel.send(RunOverviewEvent.LogoutButtonClicked)
+                }
+            }
             else -> {}
         }
     }
@@ -71,6 +81,16 @@ class RunOverviewViewModel(
     private fun onStartButtonClicked() {
         viewModelScope.launch {
             eventChannel.send(RunOverviewEvent.ActiveRunButtonClicked)
+        }
+    }
+
+    private fun logout() {
+        applicationScope.launch {
+            syncRunScheduler.cancelAllSyncs()
+            runRepository.deleteAllRuns()
+            // Invalidates the user's token remotely
+            runRepository.logout()
+            sessionStorage.set(null)
         }
     }
 

@@ -1,5 +1,6 @@
 package io.github.giorgiomicheli.core.data.run
 
+import io.github.giorgiomicheli.core.data.networking.get
 import io.github.giorgiomicheli.core.database.dao.RunPendingSyncDao
 import io.github.giorgiomicheli.core.database.mappers.toDomain
 import io.github.giorgiomicheli.core.domain.SessionStorage
@@ -13,12 +14,18 @@ import io.github.giorgiomicheli.core.domain.util.DataFailure
 import io.github.giorgiomicheli.core.domain.util.EmptyResult
 import io.github.giorgiomicheli.core.domain.util.Result
 import io.github.giorgiomicheli.core.domain.util.asEmptyDataResult
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.authProviders
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.plugin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 
 class OfflineFirstRunRepository(
@@ -27,7 +34,8 @@ class OfflineFirstRunRepository(
     private val applicationScope: CoroutineScope,
     private val runPendingSyncDao: RunPendingSyncDao,
     private val sessionStorage: SessionStorage,
-    private val syncRunScheduler: SyncRunScheduler
+    private val syncRunScheduler: SyncRunScheduler,
+    private val client: HttpClient
 ) : RunRepository {
 
     override fun getRuns(): Flow<List<Run>> {
@@ -117,6 +125,10 @@ class OfflineFirstRunRepository(
         }
     }
 
+    override suspend fun deleteAllRuns() {
+        localRunDataSource.deleteAllRuns()
+    }
+
     override suspend fun syncPendingRuns() {
         withContext(Dispatchers.IO) {
             val userId = sessionStorage.get()?.userID ?: return@withContext
@@ -179,5 +191,18 @@ class OfflineFirstRunRepository(
             pendingRunsJob.joinAll()
             pendingDeletionsJob.joinAll()
         }
+    }
+
+    override suspend fun logout(): EmptyResult<DataFailure.Network> {
+        val result = client.get<Unit>(
+            route = "/logout"
+        ).asEmptyDataResult()
+
+        client.authProviders
+            .filterIsInstance<BearerAuthProvider>()
+            .firstOrNull()
+            ?.clearToken()
+
+        return result
     }
 }

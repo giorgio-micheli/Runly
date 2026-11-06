@@ -130,6 +130,10 @@ fun NavigationRoot(
                 RunOverviewScreenRoot(
                     onActiveRunButtonClicked = {
                         backStack.add(AppRoute.ActiveRun)
+                    },
+                    onLogoutClick = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Intro)
                     }
                 )
             }
