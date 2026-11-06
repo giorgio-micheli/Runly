@@ -11,9 +11,6 @@ real-time stats and automatic background sync with the back-end.
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)
-![Room](https://img.shields.io/badge/Room-3DDC84?logo=android&logoColor=white)
-![Ktor](https://img.shields.io/badge/Ktor-087CFA?logo=ktor&logoColor=white)
-![Min SDK](https://img.shields.io/badge/minSdk-29%20(Android%2010)-orange)
 ![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
 ![Status](https://img.shields.io/badge/status-work%20in%20progress-yellow)
 
