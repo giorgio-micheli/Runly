@@ -6,22 +6,30 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.giorgiomicheli.core.domain.run.RunRepository
-import io.github.giorgiomicheli.run.presentation.active_run.ActiveRunEvent
+import io.github.giorgiomicheli.core.domain.run.SyncRunScheduler
 import io.github.giorgiomicheli.run.presentation.run_overview.mapper.toRunUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
+    private val syncRunScheduler: SyncRunScheduler
 ) : ViewModel() {
 
     var state by mutableStateOf(RunOverviewState())
         private set
 
     init {
+        // Start fetching runs from the remote server after 30 minutes
+        viewModelScope.launch {
+            syncRunScheduler.scheduleSync(
+                type = SyncRunScheduler.SyncType.FetchRuns(30.minutes)
+            )
+        }
         /*
          We collect this cold flow in the viewModelScop.
          Whenever the runs table is updated this a new list of runs will arrive and

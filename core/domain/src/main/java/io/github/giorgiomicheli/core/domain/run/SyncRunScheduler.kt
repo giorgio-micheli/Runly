@@ -1,7 +1,5 @@
-package io.github.giorgiomicheli.run.domain
+package io.github.giorgiomicheli.core.domain.run
 
-import io.github.giorgiomicheli.core.domain.run.Run
-import io.github.giorgiomicheli.core.domain.run.RunId
 import kotlin.time.Duration
 
 interface SyncRunScheduler {

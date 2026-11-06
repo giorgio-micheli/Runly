@@ -30,8 +30,5 @@ class FetchRunsWorker(
                 Result.success()
             }
         }
-
     }
-
-
 }

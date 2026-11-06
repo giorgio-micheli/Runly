@@ -8,6 +8,7 @@ import io.github.giorgiomicheli.core.domain.run.RemoteRunDataSource
 import io.github.giorgiomicheli.core.domain.run.Run
 import io.github.giorgiomicheli.core.domain.run.RunId
 import io.github.giorgiomicheli.core.domain.run.RunRepository
+import io.github.giorgiomicheli.core.domain.run.SyncRunScheduler
 import io.github.giorgiomicheli.core.domain.util.DataFailure
 import io.github.giorgiomicheli.core.domain.util.EmptyResult
 import io.github.giorgiomicheli.core.domain.util.Result
@@ -25,7 +26,8 @@ class OfflineFirstRunRepository(
     private val remoteRunDataSource: RemoteRunDataSource,
     private val applicationScope: CoroutineScope,
     private val runPendingSyncDao: RunPendingSyncDao,
-    private val sessionStorage: SessionStorage
+    private val sessionStorage: SessionStorage,
+    private val syncRunScheduler: SyncRunScheduler
 ) : RunRepository {
 
     override fun getRuns(): Flow<List<Run>> {
@@ -67,7 +69,15 @@ class OfflineFirstRunRepository(
 
         return when (remoteResult) {
             is Result.Failure -> {
-                //TODO: will handle this case later
+                applicationScope.launch {
+                    syncRunScheduler.scheduleSync(
+                        type = SyncRunScheduler.SyncType.CreateRun(
+                            run = runWithId,
+                            mapPictureBytes = mapPicture
+                        )
+                    )
+                }.join()
+
                 Result.Success(Unit)
             }
             is Result.Success -> {
@@ -97,6 +107,14 @@ class OfflineFirstRunRepository(
         val remoteResult = applicationScope.async {
             remoteRunDataSource.deleteRun(id)
         }.await()
+
+        if (remoteResult is Result.Failure) {
+            applicationScope.launch {
+                syncRunScheduler.scheduleSync(
+                    type = SyncRunScheduler.SyncType.DeleteRun(id)
+                )
+            }.join()
+        }
     }
 
     override suspend fun syncPendingRuns() {
