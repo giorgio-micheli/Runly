@@ -34,4 +34,6 @@
     <string name="error_email_password_incorrect">The email or password is incorrect</string>
     <string name="analytics">Analytics</string>
     <string name="logout">Logout</string>
+    <string name="empty_overview_screen_text">Your list of saved runs is currently empty. Take your first run and have fun!</string>
+    <string name="empty_overview_screen_title">No runs yet!</string>
 </resources>
