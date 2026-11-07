@@ -3,8 +3,10 @@
 package io.github.giorgiomicheli.run.presentation.run_overview
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -111,8 +113,8 @@ private fun RunOverviewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(horizontal = 16.dp),
-            contentPadding = padding,
+                .padding(horizontal = 20.dp),
+            contentPadding = padding.plus(PaddingValues(bottom = 20.dp)),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(
