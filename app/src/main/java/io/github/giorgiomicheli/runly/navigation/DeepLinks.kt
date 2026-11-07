@@ -19,7 +19,7 @@ private val activeRunMatcher = UriDeepLinkMatcher(
     // goes back to the RunOverviewScreen instead of leaving the app.
     // I temporarely removed this option cause if the user is already on the home screen and then a deeplink arrives,
     // there will be two homeScreens on the backstack.
-    listOf(matchResult.key)
+    listOf(AppRoute.RunOverview, matchResult.key)
 }
 
 private val deepLinkMatchers: List<DeepLinkMatcher<*, *>> = listOf(activeRunMatcher)

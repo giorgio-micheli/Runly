@@ -61,8 +61,7 @@ fun NavigationRoot(
         if (newIntent == null) return@LaunchedEffect
         if (isLoggedIn) {
             deepLinkBackStackOrNull(newIntent)?.let { stack ->
-                backStack.clear()
-                backStack.addAll(stack)
+                backStack.mergeWith(stack)
             }
         }
         onNewIntentConsumed()

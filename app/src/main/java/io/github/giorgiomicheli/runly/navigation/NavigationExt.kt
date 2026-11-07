@@ -17,6 +17,17 @@ fun NavBackStack<*>.popUpto(route: NavKey, inclusive: Boolean) {
     while(size > cutoff) removeAt(lastIndex)
 }
 
+/*
+     Turns the current back stack into 'target' while keeping the entries they have in common
+     at the beginning. Those entries keep their state and their ViewModels, and no screen is duplicated.
+     Example: [RunOverview] + target [RunOverview, ActiveRun] -> only ActiveRun is added.
+  */
+fun NavBackStack<NavKey>.mergeWith(target: List<NavKey>) {
+    val commonPrefix = zip(target).takeWhile { (current, new) -> current == new }.size
+    while (size > commonPrefix) removeAt(lastIndex)
+    addAll(target.drop(commonPrefix))
+}
+
 fun NavBackStack<*>.printCurrentBackstack() {
     var idx = 0
     val s: StringBuilder = StringBuilder()

@@ -78,10 +78,12 @@ class ActiveRunService: Service() {
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             // We need a pending intent
-            val pendingIntent = TaskStackBuilder.create(applicationContext).run {
-                addNextIntentWithParentStack(activityIntent)
-                getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
-            }
+            val pendingIntent = PendingIntent.getActivity(
+                applicationContext,
+                0,
+                activityIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
             val notification = baseNotification
                 .setContentText("00:00:00")
                 .setContentIntent(pendingIntent)
