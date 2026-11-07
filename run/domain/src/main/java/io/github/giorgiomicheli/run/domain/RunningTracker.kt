@@ -65,7 +65,26 @@ class RunningTracker(
             null
         )
 
+    // Hot flow about the geolocalization state
+    // This hot flow starts emitting immediately (eagerly)
+    val isGeolocalizationEnabled = locationObserver
+        .observeGeolocalizationEnabled()
+        .stateIn(
+            applicationScope,
+            SharingStarted.Eagerly,
+            true
+        )
+
     init {
+
+        // Without geolocalization we can't track the run, so we pause it.
+        // We never resume automatically, the user decides from the dialog.
+        isGeolocalizationEnabled
+            .onEach { isEnabled ->
+                if (!isEnabled) setIsTracking(false)
+            }
+            .launchIn(applicationScope)
+
         // We only want to track the user's time only if isTracking is true and whenever it changes
         // we also want to stop if it's false
         _isTracking

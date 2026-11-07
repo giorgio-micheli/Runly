@@ -104,6 +104,7 @@ private fun RunOverviewScreen(
                 onClick = {
                     onAction(RunOverviewAction.OnStartClick)
                 },
+                enabled = true,
                 isRunning = false
             )
         }

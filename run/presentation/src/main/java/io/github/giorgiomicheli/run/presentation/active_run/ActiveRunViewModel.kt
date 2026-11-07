@@ -34,7 +34,8 @@ class ActiveRunViewModel(
     // Jetpack Compose state
     var state by mutableStateOf(ActiveRunState(
         shouldTrack = ActiveRunService.isServiceActive && runningTracker.isTracking.value,
-        hasStartedRunning = ActiveRunService.isServiceActive
+        hasStartedRunning = ActiveRunService.isServiceActive,
+        isGeolocalizationEnabled = runningTracker.isGeolocalizationEnabled.value
     ))
         private set
 
@@ -83,6 +84,17 @@ class ActiveRunViewModel(
 
         // All the computing logic lives is responsibility of the RunningTracker class
         // Here we just listen to the changes in order to update the screen ui state.
+
+        runningTracker
+            .isGeolocalizationEnabled
+            .onEach { isEnabled ->
+                state = state.copy(
+                    isGeolocalizationEnabled = isEnabled,
+                    shouldTrack = if (isEnabled) state.shouldTrack else false
+                )
+            }
+            .launchIn(viewModelScope)
+
         runningTracker
             .currentLocation
             .onEach {
@@ -120,21 +132,27 @@ class ActiveRunViewModel(
                     backButtonPressed()
                 }
             }
-            ActiveRunAction.OnFinishRunClick -> {
+            is ActiveRunAction.OnFinishRunClick -> {
                 // temporary
                 state = state.copy(
                     isSavingRun = true,
                     isRunFinished = true
                 )
             }
-            ActiveRunAction.OnResumeRunClick -> {
-                state = state.copy(shouldTrack = true)
+            is ActiveRunAction.OnResumeRunClick -> {
+                // We can resume only if the geolocalization is enabled
+                if (state.isGeolocalizationEnabled) {
+                    state = state.copy(shouldTrack = true)
+                }
             }
-            ActiveRunAction.OnToggleRunClick -> {
-                state = state.copy(
-                    hasStartedRunning = true,
-                    shouldTrack = !state.shouldTrack
-                )
+            is ActiveRunAction.OnToggleRunClick -> {
+                // Pausing is always allowed, starting/resuming only with the location enabled
+                if (state.shouldTrack || state.isGeolocalizationEnabled) {
+                    state = state.copy(
+                        hasStartedRunning = true,
+                        shouldTrack = !state.shouldTrack
+                    )
+                }
             }
             is ActiveRunAction.SubmitLocationPermissionInfo -> {
                 _hasLocationPermission.value = action.acceptedLocationPermission

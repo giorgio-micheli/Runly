@@ -27,4 +27,5 @@
     <string name="delete">Delete</string>
     <string name="invalid_run">Invalid run</string>
     <string name="invalid_run_description">The run is too short, it\'s considered invalid</string>
+    <string name="geolocalization_inactive_description">The run has been paused because location is turned off. Turn it back on to resume, or finish the run now</string>
 </resources>

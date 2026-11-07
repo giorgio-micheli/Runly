@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,17 +44,20 @@ import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
 fun RunlyFloatingActionButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
+    enabled: Boolean,
     onClick: () -> Unit,
     isRunning: Boolean,
     contentDescription: String? = null,
     iconSize: Dp = 25.dp
 ) {
     val primary = MaterialTheme.colorScheme.primary
+    val containerColor = if (enabled) primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    val contentColor = if (enabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
 
     val progress = remember { Animatable(0f) }
 
-    LaunchedEffect(isRunning) {
-        if (!isRunning) {
+    LaunchedEffect(isRunning, enabled) {
+        if (!isRunning && enabled) {
             progress.snapTo(0f)
             progress.animateTo(
                 targetValue = 1f,
@@ -71,10 +75,14 @@ fun RunlyFloatingActionButton(
         modifier = modifier
             .size(75.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-            .clickable(onClick = onClick)
+            .background(primary.copy(alpha = if (enabled) 0.3f else 0.1f))
+            .clickable(
+                enabled = enabled,
+                role = Role.Button,
+                onClick = onClick
+            )
             .drawBehind {
-                if (!isRunning) {
+                if (!isRunning && enabled) {
                     // 'progress' is read only here, only the draw phase changes.
                     drawPulse(progress.value, phaseOffset = 0f, baseAlpha = 0.4f, color = primary)
                 }
@@ -85,7 +93,7 @@ fun RunlyFloatingActionButton(
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(containerColor)
                 .padding(12.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -93,7 +101,7 @@ fun RunlyFloatingActionButton(
                 modifier = Modifier.size(iconSize),
                 imageVector = icon,
                 contentDescription = contentDescription,
-                tint = MaterialTheme.colorScheme.onPrimary
+                tint = contentColor
             )
         }
     }
@@ -121,6 +129,7 @@ private fun RunlyFloatingActionButtonPreview() {
         RunlyFloatingActionButton(
             icon = RunIcon,
             onClick = {},
+            enabled = true,
             isRunning = false
         )
     }

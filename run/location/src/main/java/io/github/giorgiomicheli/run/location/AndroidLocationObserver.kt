@@ -1,12 +1,17 @@
 package io.github.giorgiomicheli.run.location
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Looper
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -18,6 +23,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -87,5 +93,37 @@ class AndroidLocationObserver(
                 }
             }
         }
+    }
+
+    override fun observeGeolocalizationEnabled(): Flow<Boolean> {
+        return callbackFlow {
+            val locationManager = context.getSystemService<LocationManager>()!!
+
+            fun currentValue() = LocationManagerCompat.isLocationEnabled(locationManager)
+
+            val receiver = object : BroadcastReceiver() {
+                override fun onReceive(c: Context, intent: Intent) {
+                    trySend(currentValue())
+                }
+            }
+
+            ContextCompat.registerReceiver(
+                context,
+                receiver,
+                IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+
+            // We send an initial value cause the broadcast receiver only fires when the user
+            // taps on the geolocalization quick setting. Otherwise we would not be able to know
+            // if the geolocalization is active until the user's tap.
+            trySend(currentValue())
+
+            awaitClose {
+                context.unregisterReceiver(receiver)
+            }
+            // returns a new cold flow that behaves like a hot flow, where if the new value that
+            // arrives is the same as the current one, it doesn't emit that value.
+        }.distinctUntilChanged()
     }
 }

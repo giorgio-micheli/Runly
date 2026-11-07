@@ -217,6 +217,7 @@ private fun ActiveRunScreen(
                 onClick = {
                     onAction(ActiveRunAction.OnToggleRunClick)
                 },
+                enabled = state.shouldTrack || state.isGeolocalizationEnabled,
                 isRunning = state.shouldTrack,
                 iconSize = 20.dp,
                 contentDescription = if (state.shouldTrack) {
@@ -269,24 +270,30 @@ private fun ActiveRunScreen(
                     elapsedTime = state.elapsedTime,
                     runData = state.runData,
                 )
-                LocationWarning()
+                LocationWarning(!state.isGeolocalizationEnabled && !state.hasStartedRunning)
             }
-
         }
     }
 
     if (!state.shouldTrack && state.hasStartedRunning) {
         RunlyDialog(
-            title = stringResource(id = R.string.running_is_paused),
+            title = stringResource(
+                id = if (state.isGeolocalizationEnabled) R.string.running_is_paused
+                else R.string.geolocalization_inactive),
             onDismiss = {
+                // The viewModel ignores this action if the geolocalization is not active
                 onAction(ActiveRunAction.OnResumeRunClick)
             },
-            description = stringResource(R.string.resume_or_finish_run),
+            description = stringResource(
+                id = if (state.isGeolocalizationEnabled) R.string.resume_or_finish_run
+                else R.string.geolocalization_inactive_description
+            ),
             primaryButton = {
                 RunlyActionButton(
                     modifier = Modifier.weight(1f),
                     text = stringResource(R.string.resume),
                     isLoading = false,
+                    enabled = state.isGeolocalizationEnabled,
                     onClick = {
                         onAction(ActiveRunAction.OnResumeRunClick)
                     }
