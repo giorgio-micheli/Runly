@@ -69,6 +69,8 @@ class ActiveRunViewModel(
         false
     )
 
+    private var hasProcessedRun = false
+
     init {
         _hasLocationPermission.onEach {hasPermission ->
             if (hasPermission) runningTracker.startObservingLocation()
@@ -133,7 +135,8 @@ class ActiveRunViewModel(
                 }
             }
             is ActiveRunAction.OnFinishRunClick -> {
-                // temporary
+                if (state.isRunFinished) return
+                hasProcessedRun = false
                 state = state.copy(
                     isSavingRun = true,
                     isRunFinished = true
@@ -173,6 +176,8 @@ class ActiveRunViewModel(
                 )
             }
             is ActiveRunAction.OnRunProcessed -> {
+                if (!state.isRunFinished || hasProcessedRun) return
+                hasProcessedRun = true
                 finishRun(action.mapPictureBytes)
             }
         }

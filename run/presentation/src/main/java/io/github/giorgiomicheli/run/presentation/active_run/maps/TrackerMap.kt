@@ -114,8 +114,10 @@ fun TrackerMap(
 
     val currentOnSnapshot by rememberUpdatedState(onSnapshot)
 
+    val currentRunIsFinished by rememberUpdatedState(isRunFinished)
+
     fun deliverSnapshot(bitmap: Bitmap?) {
-        if (hasDeliveredSnapshot) return
+        if (hasDeliveredSnapshot || !currentRunIsFinished) return
         hasDeliveredSnapshot = true
         snapshotJob.value?.cancel()
         currentOnSnapshot(bitmap)
@@ -130,6 +132,12 @@ fun TrackerMap(
         if (isRunFinished) {
             delay(SNAPSHOT_TIMEOUT)
             deliverSnapshot(null)
+        } else {
+            // New run (after an invalid one): reset the snapshot state
+            hasDeliveredSnapshot = false
+            triggerCapture = false
+            snapshotJob.value?.cancel()
+            snapshotJob.value = null
         }
     }
 
@@ -151,7 +159,13 @@ fun TrackerMap(
         RunlyPolylines(locations = locations)
 
         MapEffect(locations, isRunFinished, triggerCapture) { map ->
-            if (!isRunFinished || !triggerCapture || hasDeliveredSnapshot) return@MapEffect
+            // 1) Run not finished: make sure no listener from a previous run is left behind
+            if (!isRunFinished) {
+                map.setOnCameraIdleListener(null)
+                return@MapEffect
+            }
+
+            if (!triggerCapture || hasDeliveredSnapshot) return@MapEffect
             triggerCapture = false
 
             val points = locations.flatten()
@@ -163,6 +177,8 @@ fun TrackerMap(
 
             // Register the listener BEFORE moving the camera, so the "idle" event can't be lost
             map.setOnCameraIdleListener {
+                // 2) Extra safety: if the snapshot was already delivered, do nothing
+                if (hasDeliveredSnapshot || !currentRunIsFinished) return@setOnCameraIdleListener
                 snapshotJob.value?.cancel()
                 snapshotJob.value = scope.launch {
                     // We wait just to be sure that the map is focused and rendered properly
@@ -215,5 +231,4 @@ fun TrackerMap(
             }
         }
     }
-
 }
