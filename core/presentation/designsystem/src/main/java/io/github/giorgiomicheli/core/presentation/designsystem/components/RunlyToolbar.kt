@@ -52,7 +52,7 @@ fun RunlyToolbar(
     menuItems: List<DropDownItem> = emptyList(),
     onMenuItemClick: (Int) -> Unit = {},
     onBackClick: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     startContent: (@Composable () -> Unit)? = null
 ) {
 
