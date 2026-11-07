@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -67,6 +68,8 @@ fun ActiveRunScreenRoot(
     onFinish: () -> Unit,
 ) {
     val context = LocalContext.current
+    var runIsInvalid by remember { mutableStateOf(false) }
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is ActiveRunEvent.BackButtonPressed -> onBackClick()
@@ -78,6 +81,7 @@ fun ActiveRunScreenRoot(
                 ).show()
             }
             is ActiveRunEvent.RunSaved -> onFinish()
+            is ActiveRunEvent.InvalidRun -> { runIsInvalid = true }
         }
     }
 
@@ -86,6 +90,24 @@ fun ActiveRunScreenRoot(
         onServiceToggle = onServiceToggle,
         onAction = viewModel::onAction
     )
+
+    if (runIsInvalid) {
+        RunlyDialog(
+            title = stringResource(R.string.invalid_run),
+            onDismiss = { runIsInvalid = false },
+            description = stringResource(R.string.invalid_run_description),
+            primaryButton = {
+                RunlyActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.okay),
+                    isLoading = false,
+                    onClick = {
+                        runIsInvalid = false
+                    }
+                )
+            }
+        )
+    }
 }
 
 @Composable

@@ -25,4 +25,6 @@
     <string name="max_speed">Max Speed</string>
     <string name="total_elevation">Total Elevation</string>
     <string name="delete">Delete</string>
+    <string name="invalid_run">Invalid run</string>
+    <string name="invalid_run_description">The run is too short, it\'s considered invalid</string>
 </resources>
