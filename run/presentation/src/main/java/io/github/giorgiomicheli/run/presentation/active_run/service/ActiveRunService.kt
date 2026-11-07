@@ -34,6 +34,8 @@ class ActiveRunService: Service() {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(getString(io.github.giorgiomicheli.run.presentation.R.string.active_run))
+            .setOnlyAlertOnce(true) // Makes the sound only once, later updates remain silent.
+            .setOngoing(true) // The notification can't be close with a swipe, it's persistent.
     }
     // This koin function provides us a reference to the singleton RunningTracker
     private val runningTracker by inject<RunningTracker>()
@@ -121,7 +123,7 @@ class ActiveRunService: Service() {
         val channel = NotificationChannel(
             CHANNEL_ID,
             getString(io.github.giorgiomicheli.run.presentation.R.string.active_run),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_LOW
         )
         notificationManager.createNotificationChannel(channel)
     }
