@@ -6,4 +6,5 @@ sealed interface ActiveRunEvent {
     data class Error(val error: UiText): ActiveRunEvent
     data object RunSaved: ActiveRunEvent
     data object BackButtonPressed: ActiveRunEvent
+    data object InvalidRun: ActiveRunEvent
 }

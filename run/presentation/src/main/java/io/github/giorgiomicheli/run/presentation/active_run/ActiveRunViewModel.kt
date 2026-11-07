@@ -165,7 +165,19 @@ class ActiveRunViewModel(
         // We consider a valid run to have at least two locations
         // otherwise we can't calculate speed and all the other parameters based only on one point in the map.
         if (locations.isEmpty() || locations.first().size <= 1) {
-            state = state.copy(isSavingRun = false)
+            runningTracker.finishRun()
+            if (_hasLocationPermission.value) {
+                runningTracker.startObservingLocation()
+            }
+            state = state.copy(
+                isSavingRun = false,
+                isRunFinished = false,
+                hasStartedRunning = false,
+                shouldTrack = false
+            )
+            viewModelScope.launch {
+                eventChannel.send(ActiveRunEvent.InvalidRun)
+            }
             return
         }
 
