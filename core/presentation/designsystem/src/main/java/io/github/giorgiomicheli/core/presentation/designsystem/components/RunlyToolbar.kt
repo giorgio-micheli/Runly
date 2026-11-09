@@ -104,6 +104,7 @@ fun RunlyToolbar(
                                 modifier = Modifier
                                     .clickable {
                                         onMenuItemClick(index)
+                                        isDropDownOpen = false
                                     }
                                     .fillMaxWidth()
                                     .padding(12.dp),

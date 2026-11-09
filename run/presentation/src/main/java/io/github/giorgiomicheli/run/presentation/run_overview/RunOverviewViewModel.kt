@@ -68,13 +68,17 @@ class RunOverviewViewModel(
                     runRepository.deleteRun(action.runUi.id)
                 }
             }
+            is RunOverviewAction.OnAnalyticsClick -> {
+                viewModelScope.launch {
+                    eventChannel.send(RunOverviewEvent.AnalyticsButtonClicked)
+                }
+            }
             is RunOverviewAction.OnLogoutClick -> {
                 logout()
                 viewModelScope.launch {
                     eventChannel.send(RunOverviewEvent.LogoutButtonClicked)
                 }
             }
-            else -> {}
         }
     }
 

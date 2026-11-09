@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -118,10 +119,12 @@ class RunningTracker(
                     emit(location)
                 }
             }
-            .zip(_elapsedTime) { location, elapsedTime ->
+            // Read the current elapsed time when the location arrives. zip() paired each location
+            // with a stale value (the previous point's time, or the last run's time after finishRun()).
+            .map { location ->
                 LocationTimestamp(
                     location = location,
-                    durationTimestamp = elapsedTime
+                    durationTimestamp = _elapsedTime.value
                 )
             }
             .onEach { location ->

@@ -5,13 +5,23 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
 import io.github.giorgiomicheli.core.domain.location.LocationTimestamp
 import kotlin.math.abs
+import kotlin.time.DurationUnit
 
 object PolylineColorCalculator {
 
     fun locationsToColor(location1: LocationTimestamp, location2: LocationTimestamp): Color {
         val distanceMeters = location1.location.location.distanceTo(location2.location.location)
-        val timeDiff = abs((location2.durationTimestamp - location1.durationTimestamp).inWholeSeconds)
-        val speedKmh = (distanceMeters / timeDiff) * 3.6
+        val seconds = (location2.durationTimestamp - location1.durationTimestamp)
+            .absoluteValue
+            .toDouble(DurationUnit.SECONDS) // 0.407s remains 0.407s it doesn't become 0 as before when it was used inWholeSeconds()
+
+        /*
+        Handles the case where two points have the same timestamps. The velocity can't be calculated.
+        We choose a fixed color for this case.
+         */
+        if (seconds <= 0.0) return Color.Green
+
+        val speedKmh = (distanceMeters / seconds) * 3.6
 
         return interpolateColor(
             speedKmh = speedKmh,
