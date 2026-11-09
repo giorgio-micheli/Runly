@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,18 +42,19 @@ import io.github.giorgiomicheli.core.presentation.ui.ObserveAsEvents
 import io.github.giorgiomicheli.core.presentation.ui.R
 import io.github.giorgiomicheli.run.presentation.run_overview.component.RunListItem
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.component.getScopeId
 
 @Composable
 fun RunOverviewScreenRoot(
     viewModel: RunOverviewViewModel = koinViewModel(),
-    onActiveRunButtonClicked: () -> Unit,
+    onActiveRunButtonClick: () -> Unit,
+    onAnalyticsButtonClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
 
     ObserveAsEvents(viewModel.events) {event ->
         when(event) {
-            is RunOverviewEvent.ActiveRunButtonClicked -> onActiveRunButtonClicked()
+            is RunOverviewEvent.ActiveRunButtonClicked -> onActiveRunButtonClick()
+            is RunOverviewEvent.AnalyticsButtonClicked -> onAnalyticsButtonClick()
             is RunOverviewEvent.LogoutButtonClicked -> onLogoutClick()
         }
     }

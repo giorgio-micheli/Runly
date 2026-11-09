@@ -14,4 +14,7 @@ sealed interface AppRoute: NavKey {
     data object RunOverview: AppRoute
     @Serializable
     data object ActiveRun: AppRoute
+
+    @Serializable
+    data object Analytics: AppRoute
 }

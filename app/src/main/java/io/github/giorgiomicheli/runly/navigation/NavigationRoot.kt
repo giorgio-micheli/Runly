@@ -1,30 +1,21 @@
 package io.github.giorgiomicheli.runly.navigation
 
 import android.content.Intent
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import io.github.giorgiomicheli.analytics.presentation.AnalyticsDashboardScreenRoot
 import io.github.giorgiomicheli.auth.presentation.intro.IntroScreenRoot
 import io.github.giorgiomicheli.auth.presentation.login.LoginScreenRoot
 import io.github.giorgiomicheli.auth.presentation.register.RegisterScreenRoot
@@ -127,8 +118,11 @@ fun NavigationRoot(
             }
             entry<AppRoute.RunOverview> {
                 RunOverviewScreenRoot(
-                    onActiveRunButtonClicked = {
+                    onActiveRunButtonClick = {
                         backStack.add(AppRoute.ActiveRun)
+                    },
+                    onAnalyticsButtonClick = {
+                        backStack.add(AppRoute.Analytics)
                     },
                     onLogoutClick = {
                         backStack.clear()
@@ -163,6 +157,13 @@ fun NavigationRoot(
                         backStack.removeLastOrNull()
                     },
                     onFinish = {
+                        backStack.removeLastOrNull()
+                    }
+                )
+            }
+            entry<AppRoute.Analytics> {
+                AnalyticsDashboardScreenRoot(
+                    onBackClick = {
                         backStack.removeLastOrNull()
                     }
                 )
