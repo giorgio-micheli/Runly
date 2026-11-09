@@ -1,6 +1,8 @@
 package io.github.giorgiomicheli.runly
 
 import android.app.Application
+import io.github.giorgiomicheli.analytics.data.di.analyticsModule
+import io.github.giorgiomicheli.analytics.presentation.di.analyticsPresentationModule
 import io.github.giorgiomicheli.auth.data.di.authDataModule
 import io.github.giorgiomicheli.auth.presentation.di.authViewModelModule
 import io.github.giorgiomicheli.core.data.di.coreDataModule
@@ -42,7 +44,9 @@ class RunlyApp : Application() {
                 locationModule,
                 databaseModule,
                 networkModule,
-                runDataModule
+                runDataModule,
+                analyticsModule,
+                analyticsPresentationModule
             )
         }
     }
