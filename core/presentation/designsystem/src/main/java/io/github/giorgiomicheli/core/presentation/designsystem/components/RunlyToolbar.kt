@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,9 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.giorgiomicheli.core.presentation.designsystem.AnalyticsIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.ArrowLeftIcon
+import io.github.giorgiomicheli.core.presentation.designsystem.BarlowCondensed
 import io.github.giorgiomicheli.core.presentation.designsystem.LogoIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.LogoutIcon
-import io.github.giorgiomicheli.core.presentation.designsystem.Poppins
 import io.github.giorgiomicheli.core.presentation.designsystem.R
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
 import io.github.giorgiomicheli.core.presentation.designsystem.components.util.DropDownItem
@@ -53,6 +54,7 @@ fun RunlyToolbar(
     onMenuItemClick: (Int) -> Unit = {},
     onBackClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     startContent: (@Composable () -> Unit)? = null
 ) {
 
@@ -61,6 +63,7 @@ fun RunlyToolbar(
     }
     TopAppBar(
         modifier = modifier,
+        windowInsets = windowInsets,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -69,9 +72,8 @@ fun RunlyToolbar(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = title,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground,
-                    fontFamily = Poppins
                 )
             }
         },

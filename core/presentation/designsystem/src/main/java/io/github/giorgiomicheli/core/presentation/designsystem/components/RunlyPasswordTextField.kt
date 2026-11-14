@@ -1,56 +1,33 @@
 package io.github.giorgiomicheli.core.presentation.designsystem.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.text.BasicSecureTextField
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import io.github.giorgiomicheli.core.presentation.designsystem.CheckIcon
-import io.github.giorgiomicheli.core.presentation.designsystem.EmailIcon
-import io.github.giorgiomicheli.core.presentation.designsystem.EyeClosedIcon
-import io.github.giorgiomicheli.core.presentation.designsystem.EyeOpenedIcon
+import io.github.giorgiomicheli.core.presentation.designsystem.EyeIcon
+import io.github.giorgiomicheli.core.presentation.designsystem.EyeOffIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.LockIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.R
-import io.github.giorgiomicheli.core.presentation.designsystem.RunlyGray
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
+import io.github.giorgiomicheli.core.presentation.designsystem.Spacing
 
 @Composable
 fun RunlyPasswordTextField(
@@ -63,107 +40,48 @@ fun RunlyPasswordTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isFocused) {
-            MaterialTheme.colorScheme.primary.copy(
-                alpha = 0.05f
-            )
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
-        animationSpec = tween(durationMillis = 200),
-        label = "backgroundColor"
-    )
-
-    val borderColor by animateColorAsState(
-        targetValue = if (isFocused) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            Color.Transparent
-        },
-        animationSpec = tween(durationMillis = 200),
-        label = "borderColor"
-    )
-
     Column(
-        modifier = modifier
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            if (title != null) {
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
+        RunlyFieldLabel(title = title, supportingText = null, isError = false)
         BasicSecureTextField(
             state = state,
             textObfuscationMode = if (isPasswordVisible) TextObfuscationMode.Visible
             else TextObfuscationMode.Hidden,
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.colorScheme.onBackground
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface
             ),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onPrimaryContainer),
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(backgroundColor)
-                .border(
-                    width = 1.dp,
-                    color = borderColor,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(horizontal = 12.dp)
-                .onFocusChanged {
-                    isFocused = it.isFocused
-                },
+                .fillMaxWidth()
+                .runlyInputContainer(isFocused = isFocused, isError = false)
+                .onFocusChanged { isFocused = it.isFocused },
             decorator = { innerBox ->
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = LockIcon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        if (state.text.isEmpty() && !isFocused) {
-                            Text(
-                                text = hint,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                    alpha = 0.4f
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                RunlyInputDecoration(
+                    innerBox = innerBox,
+                    isEmpty = state.text.isEmpty(),
+                    hint = hint,
+                    isFocused = isFocused,
+                    startIcon = LockIcon,
+                    trailing = {
+                        IconButton(
+                            onClick = onTogglePasswordVisibility,
+                            // l'area di tocco resta 48dp, l'icona si allinea al bordo interno
+                            modifier = Modifier.offset(x = Spacing.space3)
+                        ) {
+                            Icon(
+                                imageVector = if (isPasswordVisible) EyeOffIcon else EyeIcon,
+                                contentDescription = if (isPasswordVisible) {
+                                    stringResource(id = R.string.hide_password)
+                                } else stringResource(id = R.string.show_password),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        innerBox()
                     }
-                    IconButton(
-                        onClick = onTogglePasswordVisibility
-                    ) {
-                        Icon(
-                            imageVector = if (isPasswordVisible) EyeOpenedIcon else EyeClosedIcon,
-                            contentDescription = if (isPasswordVisible) {
-                                stringResource(id = R.string.show_password)
-                            } else stringResource(id = R.string.hide_password),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                )
             }
         )
-
     }
 }
 
@@ -173,10 +91,9 @@ private fun RunlyPasswordTextFieldPreview() {
     RunlyTheme {
         RunlyPasswordTextField(
             state = rememberTextFieldState(),
-            hint = "example@test.com",
-            title = "Email",
-            modifier = Modifier
-                .fillMaxWidth(),
+            hint = "Password",
+            title = "Password",
+            modifier = Modifier.fillMaxWidth(),
             isPasswordVisible = false,
             onTogglePasswordVisibility = {}
         )

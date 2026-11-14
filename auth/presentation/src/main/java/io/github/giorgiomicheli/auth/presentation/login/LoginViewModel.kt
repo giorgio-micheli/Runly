@@ -49,6 +49,7 @@ class LoginViewModel(
                     isPasswordVisible = !state.isPasswordVisible
                 )
             }
+            is LoginAction.OnBackClick -> Unit
         }
     }
 

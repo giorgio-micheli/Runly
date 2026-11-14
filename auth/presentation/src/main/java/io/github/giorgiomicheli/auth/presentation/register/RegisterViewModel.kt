@@ -76,6 +76,7 @@ class RegisterViewModel(
             }
             is RegisterAction.OnRegisterClick -> register()
             is RegisterAction.OnLoginClick -> loginButtonClicked()
+            is RegisterAction.OnBackClick -> Unit
         }
     }
 

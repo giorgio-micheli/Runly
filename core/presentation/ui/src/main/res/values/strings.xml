@@ -9,11 +9,11 @@
     <string name="failure_serialization">Oops, couldn\'t parse data</string>
     <string name="failure_unknown">An unknown error occurred</string>
     <string name="runly">Runly</string>
-    <string name="welcome_to_runly">Welcome to Runly!</string>
-    <string name="runly_description">Track your runs, set goals and achieve fitness milestones with our intuitive app.</string>
+    <string name="welcome_to_runly">Track every run, with a tap.</string>
+    <string name="runly_description">Live route, pace and distance. Runly keeps working offline and syncs when you are back.</string>
     <string name="sign_up">Sign up</string>
     <string name="sign_in">Sign in</string>
-    <string name="create_account">Create Account</string>
+    <string name="create_account">Create account</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="login">Login</string>
     <string name="example_email">example@test.com</string>
@@ -36,4 +36,14 @@
     <string name="logout">Logout</string>
     <string name="empty_overview_screen_text">Your list of saved runs is currently empty. Take your first run and have fun!</string>
     <string name="empty_overview_screen_title">No runs yet!</string>
+    <string name="intro_avg_pace">avg pace</string>
+    <string name="login_title">Welcome back.</string>
+    <string name="login_subtitle">Sign in to pick up where you left off.</string>
+    <string name="new_to_runly">New to Runly?</string>
+    <string name="register_title">Create your account.</string>
+    <string name="register_subtitle">Your runs stay on this phone and sync to your account.</string>
+    <string name="password_min_length">%d+ characters</string>
+    <string name="password_one_number">One number</string>
+    <string name="password_lowercase">Lowercase letter</string>
+    <string name="password_uppercase">Uppercase letter</string>
 </resources>

@@ -22,7 +22,7 @@ fun RunlyScaffold(
     ) {padding ->
         if (withGradient) {
             // If we want the gradient background
-            GradientBackground() {
+            RunlyBackground() {
                 content(padding)
             }
         } else {

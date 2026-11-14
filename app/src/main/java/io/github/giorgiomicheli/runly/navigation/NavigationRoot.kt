@@ -80,7 +80,7 @@ fun NavigationRoot(
         entryProvider = entryProvider {
             entry<AppRoute.Intro> {
                 IntroScreenRoot(
-                    onSignUpClick = {
+                    onCreateAccount = {
                         backStack.add(AppRoute.Register)
                         //backStack.printCurrentBackstack()
                     },
@@ -101,6 +101,9 @@ fun NavigationRoot(
                         backStack.clear()
                         backStack.add(AppRoute.Login)
                     },
+                    onBackClick = {
+                        backStack.removeLastOrNull()
+                    }
                 )
             }
             entry<AppRoute.Login> {
@@ -114,6 +117,9 @@ fun NavigationRoot(
                         backStack.clear()
                         backStack.add(AppRoute.RunOverview)
                     },
+                    onBackClick = {
+                        backStack.removeLastOrNull()
+                    }
                 )
             }
             entry<AppRoute.RunOverview> {
