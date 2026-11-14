@@ -32,7 +32,7 @@ class ActiveRunService: Service() {
 
     private val baseNotification by lazy {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.logo)
+            .setSmallIcon(R.drawable.runly_logo)
             .setContentTitle(getString(io.github.giorgiomicheli.run.presentation.R.string.active_run))
             .setOnlyAlertOnce(true) // Makes the sound only once, later updates remain silent.
             .setOngoing(true) // The notification can't be close with a swipe, it's persistent.
