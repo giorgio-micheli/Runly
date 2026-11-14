@@ -9,18 +9,26 @@ import androidx.compose.runtime.Composable
     We will use only the dark theme in this app
  */
 val DarkColorScheme = darkColorScheme(
-    primary = RunlyGreen,
-    background = RunlyBlack,
-    surface = RunlyDarkGray,
-    secondary = RunlyWhite,
-    tertiary = RunlyWhite,
-    primaryContainer = RunlyGreen30,
-    onPrimary = RunlyBlack,
-    onBackground = RunlyWhite,
-    onSurface = RunlyWhite,
-    onSurfaceVariant = RunlyGray,
-    error = RunlyDarkRed,
-    errorContainer = RunlyDarkRed5
+    primary = Turf,
+    onPrimary = Black,
+    primaryContainer = TurfSoft,
+    onPrimaryContainer = TurfText,
+    background = Black,
+    onBackground = Chalk,
+    secondary = ClayText,
+    onSecondary = Black,
+    secondaryContainer = ClaySoft,
+    onSecondaryContainer = ClayText,
+    surface = BlackSurface,
+    onSurface = Chalk,
+    surfaceVariant = BlackSurface2,
+    onSurfaceVariant = ChalkMuted,
+    outline = BlackLineStrong,
+    outlineVariant = BlackLine,
+    error = Crimson,
+    onError = Black,
+    errorContainer = CrimsonSoft,
+    onErrorContainer = Crimson,
 )
 
 @Composable
