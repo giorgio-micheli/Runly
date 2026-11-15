@@ -30,6 +30,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.TextUnit
+import kotlin.math.roundToInt
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -197,8 +202,8 @@ private fun IntroHeroCard(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(Spacing.space5),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+                .padding(start = Spacing.space5, bottom = Spacing.space3),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.intro_avg_pace).uppercase(),
@@ -207,17 +212,21 @@ private fun IntroHeroCard(
             )
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
+                    modifier = Modifier
+                        .trimTopToCapHeight(MaterialTheme.typography.displayLarge.fontSize)
+                        .alignByBaseline(),
                     text = "5:08",
                     style = MaterialTheme.typography.displayLarge, // metric-xl
                     color = onAccent,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold,
                 )
                 Text(
+                    modifier = Modifier
+                        .padding(start = Spacing.space1)
+                        .alignByBaseline(),
                     text = "/km",
                     style = MaterialTheme.typography.labelLarge,
                     color = onAccent,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(start = Spacing.space1, bottom = 10.dp)
                 )
             }
         }
@@ -226,6 +235,24 @@ private fun IntroHeroCard(
 
 
 
+
+/**
+ * Taglia lo spazio vuoto che il font riserva sopra le maiuscole/cifre
+ * (accenti, ascendenti), così il testo "tocca" ciò che sta sopra.
+ * capHeightRatio = sCapHeight / unitsPerEm di Barlow Condensed (700 / 1000).
+ */
+private fun Modifier.trimTopToCapHeight(
+    fontSize: TextUnit,
+    capHeightRatio: Float = 0.70f
+): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    val baseline = placeable[FirstBaseline]
+    val capHeight = (fontSize.toPx() * capHeightRatio).roundToInt()
+    val trim = if (baseline == AlignmentLine.Unspecified) 0 else (baseline - capHeight).coerceAtLeast(0)
+    layout(placeable.width, placeable.height - trim) {
+        placeable.place(0, -trim)
+    }
+}
 
 @Preview
 @Composable
