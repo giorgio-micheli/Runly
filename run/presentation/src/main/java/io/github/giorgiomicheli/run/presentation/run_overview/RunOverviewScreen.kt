@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.giorgiomicheli.core.presentation.designsystem.AnalyticsIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.LogoIcon
+import io.github.giorgiomicheli.core.presentation.designsystem.LogoMonoIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.LogoutIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.RunIcon
 import io.github.giorgiomicheli.core.presentation.designsystem.RunlyTheme
@@ -101,7 +102,6 @@ private fun RunOverviewScreen(
                         modifier = Modifier.size(30.dp),
                         imageVector = LogoIcon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             )
